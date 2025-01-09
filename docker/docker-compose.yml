@@ -1,0 +1,7 @@
+services:
+  tara.authenticationservice.api:
+    image: ${DOCKER_REGISTRY-}taraauthenticationserviceapi
+    build:
+      context: ../src/Services/Authentication/TARA.AuthenticationService.Api
+      dockerfile: Dockerfile
+
