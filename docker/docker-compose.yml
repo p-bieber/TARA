@@ -1,7 +1,9 @@
+name: tara
+
 services:
-  tara.authenticationservice.api:
-    image: ${DOCKER_REGISTRY-}taraauthenticationserviceapi
+  tara.authenticationservice:
+    image: ${DOCKER_REGISTRY-}p-bieber/tara-authenticationservice
+    container_name: TARA-Authentication
     build:
       context: ../src/Services/Authentication/TARA.AuthenticationService.Api
       dockerfile: Dockerfile
-

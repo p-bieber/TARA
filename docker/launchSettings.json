@@ -4,8 +4,7 @@
       "commandName": "DockerCompose",
       "commandVersion": "1.0",
       "serviceActions": {
-        "tara.api.authenticationservice": "StartDebugging",
-        "tara.authenticationservice.api": "StartDebugging"
+        "tara.authenticationservice": "StartDebugging"
       }
     }
   }

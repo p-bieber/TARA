@@ -5,9 +5,10 @@
     <DockerTargetOS>Linux</DockerTargetOS>
     <DockerPublishLocally>False</DockerPublishLocally>
     <ProjectGuid>f71eb780-0f15-4bd2-995d-7fe0cf23e12f</ProjectGuid>
+	<DockerComposeProjectName>tara</DockerComposeProjectName>
   </PropertyGroup>
   <ItemGroup>
-    <None Include="..\.dockerignore" />
+    <None Include=".dockerignore" />
     <None Include="docker-compose.override.yml">
       <DependentUpon>docker-compose.yml</DependentUpon>
     </None>
