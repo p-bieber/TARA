@@ -33,6 +33,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TARA.AuthenticationService.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TARA.AuthenticationService.Infrastructure", "src\Services\Authentication\TARA.AuthenticationService.Infrastructure\TARA.AuthenticationService.Infrastructure.csproj", "{743D0527-FE0E-4366-8897-25E7781687E8}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{1D3C345D-E965-4671-BFF6-0AC0B4DA8912}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TARA.AuthenticationService.Tests", "tests\Services\TARA.AuthenticationService.Tests\TARA.AuthenticationService.Tests.csproj", "{3CB3A537-B044-4AD7-8297-684C69E44822}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -83,6 +87,10 @@ Global
 		{743D0527-FE0E-4366-8897-25E7781687E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{743D0527-FE0E-4366-8897-25E7781687E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{743D0527-FE0E-4366-8897-25E7781687E8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3CB3A537-B044-4AD7-8297-684C69E44822}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3CB3A537-B044-4AD7-8297-684C69E44822}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3CB3A537-B044-4AD7-8297-684C69E44822}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3CB3A537-B044-4AD7-8297-684C69E44822}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -100,5 +108,7 @@ Global
 		{B90BA0F2-9ABA-43F5-B8D8-B1233A4C6F42} = {6636F6A1-9046-481A-B5CD-2B1A2033B9FB}
 		{8EDF8E9D-1FAB-4C09-85BA-74C08C070AA5} = {6636F6A1-9046-481A-B5CD-2B1A2033B9FB}
 		{743D0527-FE0E-4366-8897-25E7781687E8} = {6636F6A1-9046-481A-B5CD-2B1A2033B9FB}
+		{1D3C345D-E965-4671-BFF6-0AC0B4DA8912} = {FD4F77CD-F395-42DF-9FC8-FA782D6BF29D}
+		{3CB3A537-B044-4AD7-8297-684C69E44822} = {1D3C345D-E965-4671-BFF6-0AC0B4DA8912}
 	EndGlobalSection
 EndGlobal
