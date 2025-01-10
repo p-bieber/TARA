@@ -8,9 +8,9 @@ namespace TARA.AuthenticationService.Application.Factories;
 public class PasswordFactory
 {
     private readonly PasswordValidator _validator;
-    private readonly PasswordHasher _passwordHasher;
+    private readonly IPasswordHasher _passwordHasher;
 
-    public PasswordFactory(PasswordValidator validator, PasswordHasher passwordHasher)
+    public PasswordFactory(PasswordValidator validator, IPasswordHasher passwordHasher)
     {
         _validator = validator;
         _passwordHasher = passwordHasher;

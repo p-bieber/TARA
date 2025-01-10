@@ -3,7 +3,7 @@ using TARA.AuthenticationService.Infrastructure.Configuration;
 
 namespace TARA.AuthenticationService.Infrastructure.Services;
 
-public class PasswordHasher
+public class PasswordHasher : IPasswordHasher
 {
     private readonly int _workFactor;
 
