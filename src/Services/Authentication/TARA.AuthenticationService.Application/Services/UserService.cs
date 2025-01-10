@@ -1,15 +1,18 @@
 ﻿using TARA.AuthenticationService.Domain.Entities;
 using TARA.AuthenticationService.Domain.Interfaces;
 using TARA.AuthenticationService.Domain.ValueObjects;
+using TARA.AuthenticationService.Infrastructure.Services;
 
 namespace TARA.AuthenticationService.Application.Services;
 public class UserService : IUserService
 {
     private readonly IUserRepository _userRepository;
+    private readonly PasswordHasher _passwordHasher;
 
-    public UserService(IUserRepository userRepository)
+    public UserService(IUserRepository userRepository, PasswordHasher passwordHasher)
     {
         _userRepository = userRepository;
+        _passwordHasher = passwordHasher;
     }
     public async Task<User?> GetUserByIdAsync(string id)
     {
