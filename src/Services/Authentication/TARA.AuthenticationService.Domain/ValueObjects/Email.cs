@@ -2,13 +2,16 @@
 public class Email
 {
     public string Value { get; private set; }
-    public Email(string address)
-    {
-        if (string.IsNullOrWhiteSpace(address))
-        {
-            throw new ArgumentException("Invalid email address", nameof(address));
-        }
 
-        Value = address;
+    private Email(string value)
+    {
+        Value = value;
+    }
+
+    public static Email Create(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            throw new ArgumentNullException(nameof(value));
+        return new Email(value);
     }
 }

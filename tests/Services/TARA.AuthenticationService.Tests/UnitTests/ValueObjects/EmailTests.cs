@@ -7,7 +7,7 @@ public class EmailTests
     [Fact]
     public void Should_Create_Email_When_Valid_Value()
     {
-        var email = new Email("test@example.com");
+        var email = Email.Create("test@example.com");
         email.Should().NotBeNull();
         email.Value.Should().BeEquivalentTo("test@example.com");
     }
@@ -15,7 +15,7 @@ public class EmailTests
     [Fact]
     public void Should_Throw_Exception_When_Invalid_Value()
     {
-        Action action = () => new Email("");
+        Action action = () => Email.Create("");
         action.Should().Throw<ArgumentException>();
     }
 }

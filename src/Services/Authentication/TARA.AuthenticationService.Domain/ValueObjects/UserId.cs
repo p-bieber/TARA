@@ -4,9 +4,14 @@ public class UserId
 {
     public Guid Value { get; private set; }
 
-    public UserId()
+    private UserId(Guid guid)
+    {
+        Value = guid;
+    }
+
+    public static UserId Create()
     {
         var guid = Guid.NewGuid();
-        Value = guid;
+        return new(guid);
     }
 }

@@ -4,13 +4,15 @@ public class Password
 {
     public string Value { get; private set; }
 
-    public Password(string password)
+    private Password(string password)
     {
-        if (string.IsNullOrWhiteSpace(password) || password.Length < 5)
-        {
-            throw new ArgumentException("Password must be at least 5 characters long.", nameof(password));
-        }
-
         Value = password;
+    }
+
+    public static Password Create(string password)
+    {
+        if (string.IsNullOrEmpty(password))
+            throw new ArgumentNullException(nameof(password));
+        return new Password(password);
     }
 }

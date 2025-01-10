@@ -5,6 +5,7 @@ using TARA.AuthenticationService.Api.Controllers;
 using TARA.AuthenticationService.Application.Dtos;
 using TARA.AuthenticationService.Domain.Entities;
 using TARA.AuthenticationService.Domain.Interfaces;
+using TARA.AuthenticationService.Domain.ValueObjects;
 
 namespace TARA.AuthenticationService.Tests.IntegrationsTests;
 public class AuthControllerTests
@@ -23,7 +24,7 @@ public class AuthControllerTests
     [Fact]
     public async Task Login_Should_Return_Ok_When_Credentials_Are_Valid()
     {
-        var user = User.Create("Maxim", "password", "maxim@mail.de");
+        var user = User.Create(UserName.Create("Maxim"), Password.Create("password"), Email.Create("maxim@mail.de"));
         var request = new LoginRequest("Maxim", "password");
 
         _userServiceMock.Setup(s => s.ValidateUserAsync("Maxim", "password"))

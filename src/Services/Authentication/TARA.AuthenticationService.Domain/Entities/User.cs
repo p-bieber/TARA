@@ -8,17 +8,16 @@ public class User
     public Password Password { get; private set; }
     public Email Email { get; private set; }
 
-    private User(UserName name, Password password, Email email)
+    private User(UserId userId, UserName name, Password password, Email email)
     {
-        Id = new UserId();
+        Id = userId;
         Name = name;
         Password = password;
         Email = email;
     }
 
-    public static User Create(string username, string password, string email)
+    public static User Create(UserName username, Password password, Email email)
     {
-        User user = new(new(username), new(password), new Email(email));
-        return user;
+        return new(UserId.Create(), username, password, email);
     }
 }

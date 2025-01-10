@@ -4,13 +4,15 @@ public class UserName
 {
     public string Value { get; private set; }
 
-    public UserName(string username)
+    private UserName(string username)
     {
-        if (string.IsNullOrWhiteSpace(username) || username.Length < 5)
-        {
-            throw new ArgumentException("Username must be at least 5 characters long.", nameof(username));
-        }
-
         Value = username;
+    }
+
+    public static UserName Create(string username)
+    {
+        if (string.IsNullOrEmpty(username))
+            throw new ArgumentNullException(nameof(username));
+        return new(username);
     }
 }

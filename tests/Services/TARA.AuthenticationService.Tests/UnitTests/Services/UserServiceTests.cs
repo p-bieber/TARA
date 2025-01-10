@@ -3,6 +3,7 @@ using Moq;
 using TARA.AuthenticationService.Application.Services;
 using TARA.AuthenticationService.Domain.Entities;
 using TARA.AuthenticationService.Domain.Interfaces;
+using TARA.AuthenticationService.Domain.ValueObjects;
 
 namespace TARA.AuthenticationService.Tests.UnitTests.Services;
 public class UserServiceTests
@@ -22,7 +23,7 @@ public class UserServiceTests
         var username = "Maxim";
         var password = "12345";
         var email = "max@mustermann.de";
-        var user = User.Create(username, password, email);
+        var user = User.Create(UserName.Create(username), Password.Create(password), Email.Create(email));
 
         _userRepositoryMock.Setup(x => x.GetUserIdAsync(It.IsAny<string>())).ReturnsAsync("TESTID");
         _userRepositoryMock.Setup(x => x.GetByIdAsync(It.IsAny<string>())).ReturnsAsync(user);

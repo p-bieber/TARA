@@ -7,10 +7,11 @@
   </PropertyGroup>
 	
 	<ItemGroup>
-		<InternalsVisibleTo Include="TARA.AuthenticationService.Api"/>
+		<InternalsVisibleTo Include="TARA.AuthenticationService.Api" />
 	</ItemGroup>
 	
   <ItemGroup>
+    <PackageReference Include="FluentValidation" Version="11.11.0" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.3.0" />
   </ItemGroup>
 
