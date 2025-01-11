@@ -9,9 +9,10 @@ public class UserId
         Value = guid;
     }
 
-    public static UserId Create()
+    public static UserId Create(Guid? guid = null)
     {
-        var guid = Guid.NewGuid();
-        return new(guid);
+        if (guid == null)
+            guid = Guid.NewGuid();
+        return new((Guid)guid);
     }
 }

@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 	<ItemGroup>
-		<InternalsVisibleTo Include="TARA.AuthenticationService.Application"/>
-		<InternalsVisibleTo Include="TARA.AuthenticationService.Infrastructure"/>
+		<InternalsVisibleTo Include="TARA.AuthenticationService.Application" />
+		<InternalsVisibleTo Include="TARA.AuthenticationService.Infrastructure" />
 	</ItemGroup>
 </Project>

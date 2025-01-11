@@ -20,14 +20,11 @@ public class UserService : IUserService
     }
     public async Task<User?> GetUserByIdAsync(string id)
     {
-        return await _userRepository.GetByIdAsync(id);
+        return await _userRepository.GetUserByIdAsync(id);
     }
     public async Task<(bool, UserId?)> ValidateUserAsync(string username, string password)
     {
-        var id = await _userRepository.GetUserIdAsync(username);
-        if (id == null)
-            return (false, null);
-        var user = await _userRepository.GetByIdAsync(id);
+        var user = await _userRepository.GetUserByNameAsync(username);
         if (user == null)
             return (false, null);
         var isPasswordVerified = _passwordHasher.VerifyPassword(password, user.Password.Value);

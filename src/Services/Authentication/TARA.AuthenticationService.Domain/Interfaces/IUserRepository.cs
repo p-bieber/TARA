@@ -3,7 +3,8 @@
 namespace TARA.AuthenticationService.Domain.Interfaces;
 public interface IUserRepository
 {
-    Task<User?> GetByIdAsync(string id);
+    Task<User?> GetUserByIdAsync(string id);
+    Task<User?> GetUserByNameAsync(string username);
     Task<string?> GetUserIdAsync(string username);
     Task AddUserAsync(User user);
     Task UpateUserAsync(User updatedUser);

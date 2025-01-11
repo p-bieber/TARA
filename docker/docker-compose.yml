@@ -7,3 +7,11 @@ services:
     build:
       context: ../src/Services/Authentication/TARA.AuthenticationService.Api
       dockerfile: Dockerfile
+  tara.db:
+    image: postgres
+    environment:
+      POSTGRES_DB: TARAAuthenticationServiceDb
+      POSTGRES_USER: yourusername
+      POSTGRES_PASSWORD: yourpassword
+    ports:
+      - "5432:5432"
