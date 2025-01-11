@@ -1,5 +1,9 @@
 name: tara
 
+networks:
+    tara-network:
+        driver: bridge 
+
 services:
   tara.authenticationservice:
     image: ${DOCKER_REGISTRY-}p-bieber/tara-authenticationservice
@@ -7,11 +11,20 @@ services:
     build:
       context: ../src/Services/Authentication/TARA.AuthenticationService.Api
       dockerfile: Dockerfile
+    depends_on:
+        - tara.db
+    networks:
+        - tara-network
+
   tara.db:
     image: postgres
+    volumes:
+        - ./.containers/database:/var/lib/postgresql/data
     environment:
-      POSTGRES_DB: TARAAuthenticationServiceDb
-      POSTGRES_USER: yourusername
-      POSTGRES_PASSWORD: yourpassword
+      POSTGRES_DB: TARA_Db
+      POSTGRES_USER: devroot
+      POSTGRES_PASSWORD: devroot.2025
     ports:
       - "5432:5432"
+    networks:
+      - tara-network

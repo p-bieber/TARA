@@ -17,7 +17,7 @@ public static class StartupExtension
         {
             options.UseNpgsql(configuration.GetConnectionString("DefaultConnection"));
         });
-        services.AddDbContext<ApplicationDbContext>(options =>
+        services.AddDbContext<EventStoreDbContext>(options =>
         {
             options.UseNpgsql(configuration.GetConnectionString("EventStoreConnection"));
         });
