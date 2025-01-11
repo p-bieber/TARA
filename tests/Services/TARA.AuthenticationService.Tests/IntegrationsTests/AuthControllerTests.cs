@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Moq;
 using TARA.AuthenticationService.Api.Controllers;
 using TARA.AuthenticationService.Application.Dtos;
@@ -10,15 +11,17 @@ using TARA.AuthenticationService.Domain.ValueObjects;
 namespace TARA.AuthenticationService.Tests.IntegrationsTests;
 public class AuthControllerTests
 {
+    private readonly Mock<ILogger<AuthController>> _logger;
     private readonly Mock<ITokenService> _tokenServiceMock;
     private readonly Mock<IUserService> _userServiceMock;
     private readonly AuthController _authController;
 
     public AuthControllerTests()
     {
+        _logger = new Mock<ILogger<AuthController>>();
         _tokenServiceMock = new Mock<ITokenService>();
         _userServiceMock = new Mock<IUserService>();
-        _authController = new AuthController(_tokenServiceMock.Object, _userServiceMock.Object);
+        _authController = new AuthController(_logger.Object, _tokenServiceMock.Object, _userServiceMock.Object);
     }
 
     [Fact]

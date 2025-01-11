@@ -31,10 +31,12 @@ public class EmailFactoryTests
     public void Should_Throw_Exception_For_Null_Email()
     {
         // Arrange
-        string address = null;
+        string? address = null;
 
         // Act
+#pragma warning disable CS8604 // Mögliches Nullverweisargument.
         Action act = () => _emailFactory.Create(address);
+#pragma warning restore CS8604 // Mögliches Nullverweisargument.
 
         // Assert
         act.Should().Throw<ArgumentNullException>();

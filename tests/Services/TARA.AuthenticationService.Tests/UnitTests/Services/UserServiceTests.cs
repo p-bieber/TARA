@@ -24,9 +24,8 @@ public class UserServiceTests
         var passwordFactory = new PasswordFactory(new PasswordValidator(), _passwordHasherMock.Object);
         var emailFactory = new EmailFactory(new EmailValidator());
 
-        var userFactory = new UserFactory(userNameFactory, passwordFactory, emailFactory, _passwordHasherMock.Object);
+        var userFactory = new UserFactory(_passwordHasherMock.Object);
         _userService = new UserService(_userRepositoryMock.Object,
-                                       userFactory,
                                        _passwordHasherMock.Object);
     }
 
@@ -38,8 +37,7 @@ public class UserServiceTests
         var email = "max@mustermann.de";
         var user = User.Create(UserName.Create(username), Password.Create(password), Email.Create(email));
 
-        _userRepositoryMock.Setup(x => x.GetUserIdAsync(It.IsAny<string>())).ReturnsAsync("TESTID");
-        _userRepositoryMock.Setup(x => x.GetByIdAsync(It.IsAny<string>())).ReturnsAsync(user);
+        _userRepositoryMock.Setup(x => x.GetUserByNameAsync(It.IsAny<string>())).ReturnsAsync(user);
         _passwordHasherMock.Setup(x => x.VerifyPassword(password, It.IsAny<string>())).Returns(true);
 
         var result = await _userService.ValidateUserAsync(username, password);
