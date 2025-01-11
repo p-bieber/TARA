@@ -8,11 +8,13 @@ namespace TARA.AuthenticationService.Api.Controllers;
 [Route("[controller]")]
 public class AuthController : ControllerBase
 {
+    private readonly ILogger<AuthController> _logger;
     private readonly ITokenService _tokenService;
     private readonly IUserService _userService;
 
-    public AuthController(ITokenService tokenService, IUserService userService)
+    public AuthController(ILogger<AuthController> logger, ITokenService tokenService, IUserService userService)
     {
+        _logger = logger;
         _tokenService = tokenService;
         _userService = userService;
     }
@@ -20,6 +22,7 @@ public class AuthController : ControllerBase
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginRequest request)
     {
+        _logger.LogInformation($"Login called. {request.UserName}");
         // Anmeldeinformationen validieren
         var (isValid, userId) = await _userService.ValidateUserAsync(request.UserName, request.Password);
         if (isValid && userId != null)

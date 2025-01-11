@@ -11,11 +11,11 @@ public class UserFactory
     private readonly EmailFactory _emailFactory;
     private readonly IPasswordHasher _passwordHasher;
 
-    public UserFactory(UserNameFactory userNameFactory, PasswordFactory passwordFactory, EmailFactory emailFactory, IPasswordHasher passwordHasher)
+    public UserFactory(IPasswordHasher passwordHasher)
     {
-        _userNameFactory = userNameFactory;
-        _passwordFactory = passwordFactory;
-        _emailFactory = emailFactory;
+        _userNameFactory = new(new());
+        _passwordFactory = new(new(), passwordHasher);
+        _emailFactory = new(new());
         _passwordHasher = passwordHasher;
     }
 
