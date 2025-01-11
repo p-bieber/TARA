@@ -1,11 +1,11 @@
-﻿using MediatR;
-using TARA.AuthenticationService.Application.CQRS.Commands;
+﻿using TARA.AuthenticationService.Application.CQRS.Abstractions;
 using TARA.AuthenticationService.Application.Factories;
 using TARA.AuthenticationService.Domain.Events;
 using TARA.AuthenticationService.Domain.Interfaces;
+using TARA.Shared;
 
-namespace TARA.AuthenticationService.Application.CQRS.Handlers;
-public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, bool>
+namespace TARA.AuthenticationService.Application.CQRS.Features.CreateUser;
+public class CreateUserCommandHandler : ICommandHandler<CreateUserCommand>
 {
     private readonly IUserRepository _userRepository;
     private readonly IEventStore _eventStore;
@@ -20,7 +20,7 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, bool>
         _passwordFactory = passwordFactory;
     }
 
-    public async Task<bool> Handle(CreateUserCommand request, CancellationToken cancellationToken)
+    public async Task<Result> Handle(CreateUserCommand request, CancellationToken cancellationToken)
     {
         var password = _passwordFactory.Create(request.Password);
         var user = _userFactory.Create(request.Username, password.Value, request.Email);
@@ -30,6 +30,6 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, bool>
         var userCreatedEvent = new UserCreatedEvent(user.Id.Value, user.UserName.Value, user.Email.Value);
         await _eventStore.SaveEventAsync(userCreatedEvent);
 
-        return true;
+        return Result.Success();
     }
 }

@@ -17,6 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Shared\TARA.Shared\TARA.Shared.csproj" />
     <ProjectReference Include="..\TARA.AuthenticationService.Domain\TARA.AuthenticationService.Domain.csproj" />
     <ProjectReference Include="..\TARA.AuthenticationService.Infrastructure\TARA.AuthenticationService.Infrastructure.csproj" />
   </ItemGroup>
