@@ -1,18 +1,11 @@
 ﻿using FluentAssertions;
 using FluentValidation;
 using TARA.AuthenticationService.Application.Factories;
-using TARA.AuthenticationService.Application.Validators;
 
 namespace TARA.AuthenticationService.Tests.UnitTests.Factories;
 public class EmailFactoryTests
 {
-    private readonly EmailFactory _emailFactory;
-
-    public EmailFactoryTests()
-    {
-        var validator = new EmailValidator();
-        _emailFactory = new EmailFactory(validator);
-    }
+    private readonly EmailFactory _emailFactory = new();
 
     [Fact]
     public void Should_Create_Valid_Email()

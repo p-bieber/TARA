@@ -1,35 +1,13 @@
 ﻿using TARA.AuthenticationService.Application.CQRS.Abstractions;
-using TARA.AuthenticationService.Application.Factories;
-using TARA.AuthenticationService.Domain.Events;
 using TARA.AuthenticationService.Domain.Interfaces;
 using TARA.Shared;
 
 namespace TARA.AuthenticationService.Application.CQRS.Features.CreateUser;
-public class CreateUserCommandHandler : ICommandHandler<CreateUserCommand>
+public class CreateUserCommandHandler(IUserService userService) : ICommandHandler<CreateUserCommand>
 {
-    private readonly IUserRepository _userRepository;
-    private readonly IEventStore _eventStore;
-    private readonly UserFactory _userFactory;
-    private readonly PasswordFactory _passwordFactory;
-
-    public CreateUserCommandHandler(IUserRepository userRepository, IEventStore eventStore, UserFactory userFactory, PasswordFactory passwordFactory)
-    {
-        _userRepository = userRepository;
-        _eventStore = eventStore;
-        _userFactory = userFactory;
-        _passwordFactory = passwordFactory;
-    }
-
     public async Task<Result> Handle(CreateUserCommand request, CancellationToken cancellationToken)
     {
-        var password = _passwordFactory.Create(request.Password);
-        var user = _userFactory.Create(request.Username, password.Value, request.Email);
-
-        await _userRepository.AddUserAsync(user);
-
-        var userCreatedEvent = new UserCreatedEvent(user.Id.Value, user.UserName.Value, user.Email.Value);
-        await _eventStore.SaveEventAsync(userCreatedEvent);
-
-        return Result.Success();
+        var result = await userService.CreateUser(request.Username, request.Password, request.Email);
+        return result;
     }
 }

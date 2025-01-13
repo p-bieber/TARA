@@ -1,19 +1,12 @@
 ﻿using FluentAssertions;
 using FluentValidation;
 using TARA.AuthenticationService.Application.Factories;
-using TARA.AuthenticationService.Application.Validators;
 
 namespace TARA.AuthenticationService.Tests.UnitTests.Factories;
 
 public class UserNameFactoryTests
 {
-    private readonly UserNameFactory _userNameFactory;
-
-    public UserNameFactoryTests()
-    {
-        var validator = new UserNameValidator();
-        _userNameFactory = new UserNameFactory(validator);
-    }
+    private readonly UserNameFactory _userNameFactory = new();
 
     [Fact]
     public void Should_Create_Valid_UserName()

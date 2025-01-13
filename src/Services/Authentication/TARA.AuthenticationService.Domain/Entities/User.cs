@@ -6,25 +6,25 @@ namespace TARA.AuthenticationService.Domain.Entities;
 public class User : IAggregateRoot
 {
     public UserId Id { get; private set; }
-    public UserName UserName { get; private set; }
+    public Username Username { get; private set; }
     public Password Password { get; private set; }
     public Email Email { get; private set; }
 
-    private List<object> _uncommittedEvents = new();
+    private readonly List<object> _uncommittedEvents = [];
 
-    private User(UserId userId, UserName name, Password password, Email email)
+    private User(UserId userId, Username name, Password password, Email email)
     {
         Id = userId;
-        UserName = name;
+        Username = name;
         Password = password;
         Email = email;
 
-        var @event = new UserCreatedEvent(Id.Value, UserName.Value, Email.Value);
+        var @event = new UserCreatedEvent(Id.Value, Username.Value, Email.Value);
         _uncommittedEvents.Add(@event);
         ApplyEvent(@event);
     }
 
-    public static User Create(UserName username, Password password, Email email)
+    public static User Create(Username username, Password password, Email email)
     {
         return new(UserId.Create(), username, password, email);
     }
@@ -35,7 +35,7 @@ public class User : IAggregateRoot
         {
             case UserCreatedEvent e:
                 Id = UserId.Create(e.UserId);
-                UserName = UserName.Create(e.Username);
+                Username = Username.Create(e.Username);
                 Email = Email.Create(e.Email);
                 break;
             default:

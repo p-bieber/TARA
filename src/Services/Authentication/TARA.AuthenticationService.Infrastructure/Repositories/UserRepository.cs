@@ -1,44 +1,44 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using TARA.AuthenticationService.Domain;
 using TARA.AuthenticationService.Domain.Entities;
 using TARA.AuthenticationService.Domain.Events;
 using TARA.AuthenticationService.Domain.Interfaces;
 using TARA.AuthenticationService.Infrastructure.Data;
+using TARA.Shared;
 
 namespace TARA.AuthenticationService.Infrastructure.Repositories;
-internal class UserRepository : IUserRepository
+internal class UserRepository(ApplicationDbContext context, IEventStore eventStore) : IUserRepository
 {
-    private readonly ApplicationDbContext _context;
-    private readonly IEventStore _eventStore;
-
-    public UserRepository(ApplicationDbContext context, IEventStore eventStore)
+    public async Task<Result> AddUserAsync(User user)
     {
-        _context = context;
-        _eventStore = eventStore;
-    }
-    public async Task AddUserAsync(User user)
-    {
-        foreach (var @event in user.GetUncommittedEvents())
+        try
         {
-            await _eventStore.SaveEventAsync(@event);
+            await context.Users.AddAsync(user);
+            await context.SaveChangesAsync();
+
+            var userCreatedEvent = new UserCreatedEvent(user.Id.Value, user.Username.Value, user.Email.Value);
+            await eventStore.SaveEventAsync(userCreatedEvent);
         }
-        user.ClearUncommittedEvents();
+        catch (Exception ex)
+        {
+            return Result.Failure(new AppError("App.Exception", ex.Message));
+        }
+
+        return Result.Success();
     }
 
-    public Task DeleteUserAsync(string id)
+    public Task<Result> DeleteUserAsync(string id)
     {
         throw new NotImplementedException();
     }
 
-    public Task<User?> GetUserByIdAsync(string id)
+    public async Task<Result<User>> GetUserByIdAsync(string id)
     {
-        throw new NotImplementedException();
-    }
-    public async Task<User?> GetUserByNameAsync(string username)
-    {
-        var user = await _context.Users.SingleOrDefaultAsync(u => u.UserName.Value == username);
-        if (user == null) return null;
+        var user = await context.Users.SingleOrDefaultAsync(u => u.Id.Value.ToString() == id);
+        if (user == null)
+            return Result.Failure<User>(AppErrors.UserError.NotFound);
 
-        var userEvents = await _eventStore.GetEventsAsync<UserCreatedEvent>(user.Id.Value);
+        var userEvents = await eventStore.GetEventsAsync<UserCreatedEvent>(user.Id.Value);
 
         foreach (var @event in userEvents)
         {
@@ -49,12 +49,24 @@ internal class UserRepository : IUserRepository
         return user;
     }
 
-    public Task<string?> GetUserIdAsync(string username)
+    public async Task<Result<User>> GetUserByNameAsync(string username)
     {
-        throw new NotImplementedException();
+        var user = await context.Users.SingleOrDefaultAsync(u => u.Username.Value == username);
+        if (user == null)
+            return Result.Failure<User>(AppErrors.UserError.NotFound);
+
+        var userEvents = await eventStore.GetEventsAsync<UserCreatedEvent>(user.Id.Value);
+
+        foreach (var @event in userEvents)
+        {
+            if (@event != null)
+                user.ApplyEvent(@event);
+        }
+
+        return user;
     }
 
-    public Task UpateUserAsync(User updatedUser)
+    public Task<Result> UpateUserAsync(User updatedUser)
     {
         throw new NotImplementedException();
     }

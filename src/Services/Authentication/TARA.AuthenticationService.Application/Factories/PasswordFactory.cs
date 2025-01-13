@@ -5,16 +5,9 @@ using TARA.AuthenticationService.Infrastructure.Services;
 
 namespace TARA.AuthenticationService.Application.Factories;
 
-public class PasswordFactory
+public class PasswordFactory(IPasswordHasher passwordHasher)
 {
-    private readonly PasswordValidator _validator;
-    private readonly IPasswordHasher _passwordHasher;
-
-    public PasswordFactory(PasswordValidator validator, IPasswordHasher passwordHasher)
-    {
-        _validator = validator;
-        _passwordHasher = passwordHasher;
-    }
+    private readonly PasswordValidator _validator = new();
 
     public Password Create(string password)
     {
@@ -26,7 +19,7 @@ public class PasswordFactory
             throw new ValidationException(result.Errors[0].ErrorMessage, result.Errors);
         }
 
-        var securePassword = _passwordHasher.HashPassword(unsecurePassword.Value);
+        var securePassword = passwordHasher.HashPassword(unsecurePassword.Value);
         return Password.Create(securePassword);
     }
 }

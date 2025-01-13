@@ -3,7 +3,7 @@ using TARA.AuthenticationService.Domain.ValueObjects;
 
 namespace TARA.AuthenticationService.Application.Validators;
 
-public class UserNameValidator : AbstractValidator<UserName>
+public class UserNameValidator : AbstractValidator<Username>
 {
     public UserNameValidator()
     {

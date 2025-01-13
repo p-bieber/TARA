@@ -1,6 +1,6 @@
 ﻿using TARA.AuthenticationService.Application.CQRS.Abstractions;
-using TARA.AuthenticationService.Domain.Entities;
+using TARA.AuthenticationService.Application.Dtos;
 
 namespace TARA.AuthenticationService.Application.CQRS.Features.GetUserByUsername;
 
-public record GetUserByUsernameQuery(string Username) : IQuery<User>;
+public record GetUserByUsernameQuery(string Username) : IQuery<UserDto>;

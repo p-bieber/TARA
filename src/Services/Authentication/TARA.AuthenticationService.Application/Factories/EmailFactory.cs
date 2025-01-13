@@ -5,13 +5,7 @@ using TARA.AuthenticationService.Domain.ValueObjects;
 namespace TARA.AuthenticationService.Application.Factories;
 public class EmailFactory
 {
-    private readonly EmailValidator _validator;
-
-    public EmailFactory(EmailValidator validator)
-    {
-        _validator = validator;
-    }
-
+    private readonly EmailValidator _validator = new();
     public Email Create(string address)
     {
         var email = Email.Create(address);

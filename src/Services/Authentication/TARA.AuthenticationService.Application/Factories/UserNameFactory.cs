@@ -6,16 +6,11 @@ namespace TARA.AuthenticationService.Application.Factories;
 
 public class UserNameFactory
 {
-    private readonly UserNameValidator _validator;
+    private readonly UserNameValidator _validator = new();
 
-    public UserNameFactory(UserNameValidator validator)
+    public Username Create(string name)
     {
-        _validator = validator;
-    }
-
-    public UserName Create(string name)
-    {
-        var username = UserName.Create(name);
+        var username = Username.Create(name);
         var result = _validator.Validate(username);
 
         if (!result.IsValid)

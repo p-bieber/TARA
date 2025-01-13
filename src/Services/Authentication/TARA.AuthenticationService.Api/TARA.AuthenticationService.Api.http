@@ -1,9 +1,5 @@
 @TARA.AuthenticationService.Api_HostAddress = https://localhost:10200
 
-GET {{TARA.AuthenticationService.Api_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
 POST {{TARA.AuthenticationService.Api_HostAddress}}/auth/login/
 Content-Type: application/json
 {

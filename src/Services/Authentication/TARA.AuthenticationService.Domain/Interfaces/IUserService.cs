@@ -1,10 +1,10 @@
 ﻿using TARA.AuthenticationService.Domain.Entities;
-using TARA.AuthenticationService.Domain.ValueObjects;
+using TARA.Shared;
 
 namespace TARA.AuthenticationService.Domain.Interfaces;
 public interface IUserService
 {
-    Task CreateUser(string username, string password, string email);
-    Task<User?> GetUserByIdAsync(string id);
-    Task<(bool, UserId?)> ValidateUserAsync(string userName, string password);
+    Task<Result> CreateUser(string username, string password, string email);
+    Task<Result<User>> GetUserByNameAsync(string id);
+    Task<Result<User>> VerifyUserPasswordAsync(string username, string password);
 }

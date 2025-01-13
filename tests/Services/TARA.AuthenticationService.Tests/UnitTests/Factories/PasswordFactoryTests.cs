@@ -1,23 +1,19 @@
 ﻿using FluentAssertions;
 using FluentValidation;
-using Microsoft.Extensions.Options;
+using Moq;
 using TARA.AuthenticationService.Application.Factories;
-using TARA.AuthenticationService.Application.Validators;
-using TARA.AuthenticationService.Infrastructure.Configuration;
 using TARA.AuthenticationService.Infrastructure.Services;
 
 namespace TARA.AuthenticationService.Tests.UnitTests.Factories;
 
 public class PasswordFactoryTests
 {
+    private readonly Mock<IPasswordHasher> _passwordHasherMock = new();
     private readonly PasswordFactory _passwordFactory;
 
     public PasswordFactoryTests()
     {
-        var validator = new PasswordValidator();
-        var options = Options.Create(new PasswordSettings { WorkFactor = 12 });
-        var passwordHasher = new PasswordHasher(options);
-        _passwordFactory = new PasswordFactory(validator, passwordHasher);
+        _passwordFactory = new(_passwordHasherMock.Object);
     }
 
     [Fact]
@@ -25,13 +21,16 @@ public class PasswordFactoryTests
     {
         // Arrange
         var password = "ValidPass123!";
+        var hashedPassword = "HashedPassword";
+
+        _passwordHasherMock.Setup(s => s.HashPassword(password)).Returns(hashedPassword);
 
         // Act
         var result = _passwordFactory.Create(password);
 
         // Assert
-        result.Value.Should().NotBe(password);
         result.Value.Should().NotBeNullOrWhiteSpace();
+        result.Value.Should().Be(hashedPassword);
     }
 
     [Fact]

@@ -1,6 +1,8 @@
-﻿namespace TARA.AuthenticationService.Domain.Interfaces;
+﻿using TARA.Shared;
+
+namespace TARA.AuthenticationService.Domain.Interfaces;
 
 public interface ITokenService
 {
-    string GenerateToken(string userId);
+    Result<string> GenerateToken(string userId);
 }

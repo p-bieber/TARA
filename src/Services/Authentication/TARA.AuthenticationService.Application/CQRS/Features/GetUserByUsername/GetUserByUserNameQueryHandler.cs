@@ -1,25 +1,18 @@
 ﻿using TARA.AuthenticationService.Application.CQRS.Abstractions;
-using TARA.AuthenticationService.Domain.Entities;
+using TARA.AuthenticationService.Application.Dtos;
 using TARA.AuthenticationService.Domain.Interfaces;
 using TARA.Shared;
 
 namespace TARA.AuthenticationService.Application.CQRS.Features.GetUserByUsername;
-public class GetUserByUsernameQueryHandler : IQueryHandler<GetUserByUsernameQuery, User>
+public class GetUserByUsernameQueryHandler(IUserService userService) : IQueryHandler<GetUserByUsernameQuery, UserDto>
 {
-    private readonly IUserRepository _userRepository;
-
-    public GetUserByUsernameQueryHandler(IUserRepository userRepository)
+    public async Task<Result<UserDto>> Handle(GetUserByUsernameQuery request, CancellationToken cancellationToken)
     {
-        _userRepository = userRepository;
-    }
+        var result = await userService.GetUserByNameAsync(request.Username);
+        if (result.IsFailure)
+            return Result.Failure<UserDto>(result.Error);
 
-    public async Task<Result<User>> Handle(GetUserByUsernameQuery request, CancellationToken cancellationToken)
-    {
-        var user = await _userRepository.GetUserByNameAsync(request.Username);
-        if (user == null)
-        {
-            return Result.Failure<User>(AppErrors.UserNotFound);
-        }
-        return Result.Success<User>(user);
+        var userDto = new UserDto(result.Value.Id.Value.ToString(), result.Value.Username.Value, result.Value.Email.Value);
+        return Result.Success(userDto);
     }
 }

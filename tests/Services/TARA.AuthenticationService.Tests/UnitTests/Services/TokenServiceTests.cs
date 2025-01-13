@@ -18,7 +18,7 @@ public class TokenServiceTests
         var audience = "tara";
 
         // Act
-        var token = tokenService.GenerateToken(userId);
+        var tokenResult = tokenService.GenerateToken(userId);
         var handler = new JwtSecurityTokenHandler();
         var validationParameters = new TokenValidationParameters
         {
@@ -31,9 +31,10 @@ public class TokenServiceTests
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey))
         };
 
-        var principal = handler.ValidateToken(token, validationParameters, out var validatedToken);
+        var principal = handler.ValidateToken(tokenResult.Value, validationParameters, out var validatedToken);
 
         // Assert
+        tokenResult.IsSuccess.Should().BeTrue();
         validatedToken.Should().NotBeNull();
         validatedToken.Should().BeOfType<JwtSecurityToken>();
         principal.Identity.Should().NotBeNull();

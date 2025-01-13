@@ -1,41 +1,34 @@
 ﻿using FluentAssertions;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
 using TARA.AuthenticationService.Api.Controllers;
+using TARA.AuthenticationService.Application.CQRS.Features.Login;
 using TARA.AuthenticationService.Application.Dtos;
-using TARA.AuthenticationService.Domain.Entities;
-using TARA.AuthenticationService.Domain.Interfaces;
-using TARA.AuthenticationService.Domain.ValueObjects;
+using TARA.AuthenticationService.Domain;
+using TARA.Shared;
 
 namespace TARA.AuthenticationService.Tests.IntegrationsTests;
 public class AuthControllerTests
 {
-    private readonly Mock<ILogger<AuthController>> _logger;
-    private readonly Mock<ITokenService> _tokenServiceMock;
-    private readonly Mock<IUserService> _userServiceMock;
+    private readonly Mock<ILogger<AuthController>> _loggerMock;
+    private readonly Mock<ISender> _senderMock;
     private readonly AuthController _authController;
 
     public AuthControllerTests()
     {
-        _logger = new Mock<ILogger<AuthController>>();
-        _tokenServiceMock = new Mock<ITokenService>();
-        _userServiceMock = new Mock<IUserService>();
-        _authController = new AuthController(_logger.Object, _tokenServiceMock.Object, _userServiceMock.Object);
+        _loggerMock = new Mock<ILogger<AuthController>>();
+        _senderMock = new Mock<ISender>();
+        _authController = new AuthController(_loggerMock.Object, _senderMock.Object);
     }
 
     [Fact]
     public async Task Login_Should_Return_Ok_When_Credentials_Are_Valid()
     {
-        var user = User.Create(UserName.Create("Maxim"), Password.Create("password"), Email.Create("maxim@mail.de"));
-        var request = new LoginRequest("Maxim", "password");
+        var request = new LoginQuery("Maxim", "password");
 
-        _userServiceMock.Setup(s => s.ValidateUserAsync("Maxim", "password"))
-            .ReturnsAsync((true, user.Id));
-        _userServiceMock.Setup(s => s.GetUserByIdAsync(It.IsAny<string>()))
-            .ReturnsAsync(user);
-        _tokenServiceMock.Setup(s => s.GenerateToken(user.Id.Value.ToString()))
-            .Returns("valid-token");
+        _senderMock.Setup(s => s.Send(request, CancellationToken.None)).ReturnsAsync(Result.Success(new LoginResponseDto("valid-token")));
 
         var result = await _authController.Login(request) as OkObjectResult;
 
@@ -45,8 +38,16 @@ public class AuthControllerTests
     }
 
     [Fact]
-    public void Login_Should_Return_Unauthorized_When_Credentials_Are_Invalid()
+    public async Task Login_Should_Return_Unauthorized_When_Credentials_Are_Invalid()
     {
+        var request = new LoginQuery("Maxim", "password");
 
+        _senderMock.Setup(s => s.Send(request, CancellationToken.None)).ReturnsAsync(Result.Failure<LoginResponseDto>(AppErrors.UserError.WrongLoginCredientials));
+
+        var result = await _authController.Login(request) as BadRequestObjectResult;
+
+        result.Should().NotBeNull();
+        result!.StatusCode.Should().Be(400);
+        result.Value.Should().BeEquivalentTo(AppErrors.UserError.WrongLoginCredientials);
     }
 }

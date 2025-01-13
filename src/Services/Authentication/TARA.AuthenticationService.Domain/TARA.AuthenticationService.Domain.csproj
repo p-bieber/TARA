@@ -9,4 +9,7 @@
 		<InternalsVisibleTo Include="TARA.AuthenticationService.Application" />
 		<InternalsVisibleTo Include="TARA.AuthenticationService.Infrastructure" />
 	</ItemGroup>
+	<ItemGroup>
+	  <ProjectReference Include="..\..\..\Shared\TARA.Shared\TARA.Shared.csproj" />
+	</ItemGroup>
 </Project>

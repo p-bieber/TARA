@@ -1,15 +1,15 @@
 ﻿namespace TARA.AuthenticationService.Domain.ValueObjects;
 
-public class UserName
+public class Username
 {
     public string Value { get; private set; }
 
-    private UserName(string username)
+    private Username(string username)
     {
         Value = username;
     }
 
-    public static UserName Create(string username)
+    public static Username Create(string username)
     {
         if (string.IsNullOrEmpty(username))
             throw new ArgumentNullException(nameof(username));

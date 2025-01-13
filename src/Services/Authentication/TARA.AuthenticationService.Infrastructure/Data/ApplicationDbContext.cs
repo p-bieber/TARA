@@ -13,7 +13,7 @@ public class ApplicationDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
         modelBuilder.Entity<User>().HasKey(u => u.Id);
-        modelBuilder.Entity<User>().Property(u => u.UserName.Value).IsRequired().HasMaxLength(15);
+        modelBuilder.Entity<User>().Property(u => u.Username.Value).IsRequired().HasMaxLength(15);
         modelBuilder.Entity<User>().Property(u => u.Password.Value).IsRequired();
         modelBuilder.Entity<User>().Property(u => u.Email.Value).IsRequired();
     }
