@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using TARA.AuthenticationService.Application.CQRS.Features.CreateUser;
 using TARA.AuthenticationService.Application.CQRS.Features.Login;
 
 namespace TARA.AuthenticationService.Api.Controllers;
@@ -22,5 +23,16 @@ public class AuthController(ILogger<AuthController> logger, ISender sender) : Ba
             return BadRequest(result.Error);
         }
         return Unauthorized();
+    }
+
+    [HttpPost("register")]
+    public async Task<IActionResult> Register([FromBody] CreateUserCommand request)
+    {
+        var result = await _sender.Send(request);
+        if (result == null) return BadRequest();
+
+        return result.IsSuccess
+            ? Ok()
+            : BadRequest(result.Error);
     }
 }
