@@ -10,6 +10,9 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+
+        modelBuilder.HasDefaultSchema("Authentication");
+
         modelBuilder.Entity<User>().HasKey(u => u.Id);
         modelBuilder.Entity<User>().OwnsOne(u => u.Username).Property(u => u.Value).IsRequired().HasMaxLength(15);
         modelBuilder.Entity<User>().OwnsOne(u => u.Password).Property(u => u.Value).IsRequired();

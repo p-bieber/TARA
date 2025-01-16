@@ -10,17 +10,19 @@ using TARA.AuthenticationService.Application.CQRS.Features.CreateUser;
 using TARA.AuthenticationService.Application.CQRS.Features.Login;
 using TARA.AuthenticationService.Application.Dtos;
 using TARA.AuthenticationService.Domain;
+using TARA.AuthenticationService.Domain.Events;
 using TARA.AuthenticationService.Infrastructure.Data;
 using TARA.AuthenticationService.Tests.Fixtures;
 using TARA.Shared;
 
 namespace TARA.AuthenticationService.Tests.IntegrationsTests;
 
-public class AuthControllerInMemoryTests : IClassFixture<IntegrationTestFixture>
+public class AuthControllerInMemoryTests : IAsyncLifetime, IClassFixture<IntegrationTestFixture>
 {
     private readonly ApplicationDbContext _context;
     private readonly EventStoreDbContext _eventStore;
     private readonly AuthController _authController;
+
 
     public AuthControllerInMemoryTests(IntegrationTestFixture testFixture)
     {
@@ -29,6 +31,20 @@ public class AuthControllerInMemoryTests : IClassFixture<IntegrationTestFixture>
         var loggerMock = new Mock<ILogger<AuthController>>();
         var sender = testFixture.ServiceProvider.GetRequiredService<ISender>();
         _authController = new AuthController(loggerMock.Object, sender);
+    }
+
+    public async Task InitializeAsync()
+    {
+        await _context.Database.EnsureDeletedAsync();
+        await _eventStore.Database.EnsureDeletedAsync();
+        await _context.Database.EnsureCreatedAsync();
+        await _eventStore.Database.EnsureCreatedAsync();
+    }
+
+    public async Task DisposeAsync()
+    {
+        await _context.Database.EnsureDeletedAsync();
+        await _eventStore.Database.EnsureDeletedAsync();
     }
 
     [Fact]
@@ -44,6 +60,9 @@ public class AuthControllerInMemoryTests : IClassFixture<IntegrationTestFixture>
         user.Should().NotBeNull();
         user?.Email.Value.Should().Be("testemail@test.de");
 
+        var @event = await _eventStore.Events.FirstOrDefaultAsync(x => x.AggregateId == user!.Id);
+        @event.Should().NotBeNull();
+        @event!.Type.Should().Be(nameof(UserCreatedEvent));
     }
 
     [Theory]
@@ -84,4 +103,6 @@ public class AuthControllerInMemoryTests : IClassFixture<IntegrationTestFixture>
         result!.Value.Should().BeOfType<AppError>();
         result.Value.Should().Be(AppErrors.UserError.WrongLoginCredientials);
     }
+
+
 }

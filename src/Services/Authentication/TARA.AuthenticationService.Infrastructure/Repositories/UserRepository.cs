@@ -17,7 +17,7 @@ internal class UserRepository(ApplicationDbContext context, IEventStore eventSto
             await context.SaveChangesAsync();
 
             var userCreatedEvent = new UserCreatedEvent(user.Id, user.Username.Value, user.Email.Value);
-            await eventStore.SaveEventAsync(userCreatedEvent);
+            await eventStore.SaveEventAsync(user.Id, userCreatedEvent);
         }
         catch (Exception ex)
         {

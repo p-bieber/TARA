@@ -13,7 +13,7 @@ public class EventStore : IEventStore
         _context = context;
     }
 
-    public async Task SaveEventAsync<T>(T @event) where T : class
+    public async Task SaveEventAsync<T>(Guid aggregateId, T @event) where T : class
     {
         var eventType = @event.GetType().Name;
         var data = JsonSerializer.Serialize(@event);
@@ -22,7 +22,8 @@ public class EventStore : IEventStore
             Id = Guid.NewGuid(),
             Type = eventType,
             Data = data,
-            CreatedAt = DateTimeOffset.UtcNow
+            CreatedAt = DateTimeOffset.UtcNow,
+            AggregateId = aggregateId
         };
         _context.Events.Add(newEvent);
         await _context.SaveChangesAsync();
@@ -31,7 +32,7 @@ public class EventStore : IEventStore
     public async Task<IEnumerable<T?>> GetEventsAsync<T>(Guid aggregateId) where T : class
     {
         var events = await _context.Events
-            .Where(e => e.Id == aggregateId)
+            .Where(e => e.AggregateId == aggregateId)
             .OrderBy(e => e.CreatedAt)
             .ToListAsync();
 

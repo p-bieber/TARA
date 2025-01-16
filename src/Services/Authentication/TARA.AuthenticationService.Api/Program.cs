@@ -1,4 +1,6 @@
+using Microsoft.EntityFrameworkCore;
 using TARA.AuthenticationService.Application;
+using TARA.AuthenticationService.Infrastructure.Data;
 
 namespace TARA.AuthenticationService.Api;
 
@@ -20,6 +22,7 @@ public class Program
         if (app.Environment.IsDevelopment())
         {
             app.MapOpenApi();
+            DatabaseMigrate(app);
         }
 
         app.UseHttpsRedirection();
@@ -29,5 +32,15 @@ public class Program
         app.MapControllers();
 
         app.Run();
+    }
+
+    private static void DatabaseMigrate(IApplicationBuilder app)
+    {
+        using var scope = app.ApplicationServices.CreateScope();
+        var services = scope.ServiceProvider;
+        var context = services.GetRequiredService<ApplicationDbContext>();
+        var eventStore = services.GetRequiredService<EventStoreDbContext>();
+        context.Database.Migrate();
+        eventStore.Database.Migrate();
     }
 }

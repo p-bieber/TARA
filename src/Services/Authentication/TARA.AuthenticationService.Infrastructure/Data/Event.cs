@@ -5,5 +5,6 @@ public class Event
     public string Type { get; set; } = string.Empty;
     public string Data { get; set; } = string.Empty;
     public DateTimeOffset CreatedAt { get; set; }
+    public Guid AggregateId { get; set; }
 }
 
