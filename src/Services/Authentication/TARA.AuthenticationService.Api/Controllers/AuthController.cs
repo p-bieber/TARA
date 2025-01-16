@@ -13,26 +13,24 @@ public class AuthController(ILogger<AuthController> logger, ISender sender) : Ba
     public async Task<IActionResult> Login([FromBody] LoginQuery request)
     {
         var result = await _sender.Send(request);
-        if (result == null)
-            return BadRequest();
 
-        if (result.IsSuccess)
-            return Ok(result.Value);
-        if (result.IsFailure)
-        {
-            return BadRequest(result.Error);
-        }
-        return Unauthorized();
+        return result != null
+            ? result.IsSuccess
+            ? Ok(result.Value)
+            : BadRequest(result.Error)
+            : Conflict();
     }
 
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] CreateUserCommand request)
     {
         var result = await _sender.Send(request);
-        if (result == null) return BadRequest();
-
-        return result.IsSuccess
+        return result == null
+            ? Conflict()
+            : result.IsSuccess
             ? Ok()
-            : BadRequest(result.Error);
+            : result.IsFailure
+            ? BadRequest(result.Error)
+            : BadRequest();
     }
 }

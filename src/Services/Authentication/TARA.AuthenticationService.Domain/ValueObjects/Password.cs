@@ -4,6 +4,9 @@ public class Password
 {
     public string Value { get; private set; }
 
+#pragma warning disable CS8618 
+    private Password() { } // ef core
+#pragma warning restore CS8618 
     private Password(string password)
     {
         Value = password;
@@ -11,8 +14,8 @@ public class Password
 
     public static Password Create(string password)
     {
-        if (string.IsNullOrEmpty(password))
-            throw new ArgumentNullException(nameof(password));
-        return new Password(password);
+        return string.IsNullOrEmpty(password)
+            ? throw new ArgumentNullException(nameof(password))
+            : new Password(password);
     }
 }

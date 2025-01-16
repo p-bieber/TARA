@@ -1,0 +1,87 @@
+﻿using FluentAssertions;
+using MediatR;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Moq;
+using TARA.AuthenticationService.Api.Controllers;
+using TARA.AuthenticationService.Application.CQRS.Features.CreateUser;
+using TARA.AuthenticationService.Application.CQRS.Features.Login;
+using TARA.AuthenticationService.Application.Dtos;
+using TARA.AuthenticationService.Domain;
+using TARA.AuthenticationService.Infrastructure.Data;
+using TARA.AuthenticationService.Tests.Fixtures;
+using TARA.Shared;
+
+namespace TARA.AuthenticationService.Tests.IntegrationsTests;
+
+public class AuthControllerInMemoryTests : IClassFixture<IntegrationTestFixture>
+{
+    private readonly ApplicationDbContext _context;
+    private readonly EventStoreDbContext _eventStore;
+    private readonly AuthController _authController;
+
+    public AuthControllerInMemoryTests(IntegrationTestFixture testFixture)
+    {
+        _context = testFixture.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        _eventStore = testFixture.ServiceProvider.GetRequiredService<EventStoreDbContext>();
+        var loggerMock = new Mock<ILogger<AuthController>>();
+        var sender = testFixture.ServiceProvider.GetRequiredService<ISender>();
+        _authController = new AuthController(loggerMock.Object, sender);
+    }
+
+    [Fact]
+    public async Task Register_Should_Return_Ok_When_Data_Is_Valid_And_Insert_User_In_Database()
+    {
+        var request = new CreateUserCommand("TestUser", "Test-Pa55word", "testemail@test.de");
+
+        var result = await _authController.Register(request) as OkResult;
+        result.Should().NotBeNull();
+        result!.StatusCode.Should().Be(200);
+
+        var user = await _context.Users.FirstOrDefaultAsync(x => x.Username.Value == "TestUser");
+        user.Should().NotBeNull();
+        user?.Email.Value.Should().Be("testemail@test.de");
+
+    }
+
+    [Theory]
+    [InlineData("TestUser", "Test-Password", "testemail@test.de")]
+    [InlineData("TestUser", "P4ss", "testemail@test.de")]
+    [InlineData("TestUser", "test-pa55word", "testemail@test.de")]
+    [InlineData("TestUser", "test-password", "testemail@test.de")]
+    [InlineData("TestUser", "Test-Pa55word", "testemailtest.de")]
+    public async Task Register_Should_Return_BadRequest_With_ErrorMsg_When_Data_Is_Invalid_And_Dont_Insert_User_In_Database(string username, string password, string email)
+    {
+        var request = new CreateUserCommand(username, password, email);
+
+        var result = await _authController.Register(request) as BadRequestObjectResult;
+        result.Should().NotBeNull();
+    }
+
+    [Fact]
+    public async Task Login_Should_Return_Ok_When_Credentials_Are_Valid()
+    {
+        var createRequest = new CreateUserCommand("TestUser", "Test-Pa55word", "testemail@test.de");
+        await _authController.Register(createRequest);
+
+        var request = new LoginQuery("TestUser", "Test-Pa55word");
+        var result = await _authController.Login(request) as OkObjectResult;
+        result.Should().NotBeNull();
+        result!.Value.Should().BeOfType<LoginResponseDto>();
+    }
+
+    [Fact]
+    public async Task Login_Should_Return_BadRequest_When_Credentials_Are_Invalid()
+    {
+        var createRequest = new CreateUserCommand("TestUser", "Test-Pa55word", "testemail@test.de");
+        await _authController.Register(createRequest);
+
+        var request = new LoginQuery("TestUser", "Wrong-Pa55word");
+        var result = await _authController.Login(request) as BadRequestObjectResult;
+        result.Should().NotBeNull();
+        result!.Value.Should().BeOfType<AppError>();
+        result.Value.Should().Be(AppErrors.UserError.WrongLoginCredientials);
+    }
+}

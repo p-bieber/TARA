@@ -10,17 +10,20 @@ using TARA.AuthenticationService.Infrastructure.Services;
 namespace TARA.AuthenticationService.Infrastructure;
 public static class StartupExtension
 {
-    public static IServiceCollection RegisterInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection RegisterInfrastructureServices(this IServiceCollection services, IConfiguration configuration, bool isTestEnviroment = false)
     {
-        // DbContext
-        services.AddDbContext<ApplicationDbContext>(options =>
+        if (!isTestEnviroment)
         {
-            options.UseNpgsql(configuration.GetConnectionString("DefaultConnection"));
-        });
-        services.AddDbContext<EventStoreDbContext>(options =>
-        {
-            options.UseNpgsql(configuration.GetConnectionString("EventStoreConnection"));
-        });
+            // DbContext
+            services.AddDbContext<ApplicationDbContext>(options =>
+            {
+                options.UseNpgsql(configuration.GetConnectionString("DefaultConnection"));
+            });
+            services.AddDbContext<EventStoreDbContext>(options =>
+            {
+                options.UseNpgsql(configuration.GetConnectionString("EventStoreConnection"));
+            });
+        }
 
         // Settings
         services.Configure<PasswordSettings>(options =>

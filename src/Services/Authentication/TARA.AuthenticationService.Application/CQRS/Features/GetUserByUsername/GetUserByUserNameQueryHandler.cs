@@ -12,7 +12,7 @@ public class GetUserByUsernameQueryHandler(IUserService userService) : IQueryHan
         if (result.IsFailure)
             return Result.Failure<UserDto>(result.Error);
 
-        var userDto = new UserDto(result.Value.Id.Value.ToString(), result.Value.Username.Value, result.Value.Email.Value);
+        var userDto = new UserDto(result.Value.Id.ToString(), result.Value.Username.Value, result.Value.Email.Value);
         return Result.Success(userDto);
     }
 }

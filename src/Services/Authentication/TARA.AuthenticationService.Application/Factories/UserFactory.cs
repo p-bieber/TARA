@@ -1,5 +1,4 @@
 ﻿using TARA.AuthenticationService.Domain.Entities;
-using TARA.AuthenticationService.Domain.ValueObjects;
 using TARA.AuthenticationService.Infrastructure.Services;
 
 namespace TARA.AuthenticationService.Application.Factories;
@@ -17,10 +16,7 @@ public class UserFactory(IPasswordHasher passwordHasher)
         var _password = _passwordFactory.Create(password);
         var _email = _emailFactory.Create(email);
 
-        //PasswordHashing
-        var sercurePassword = Password.Create(passwordHasher.HashPassword(_password.Value));
-
-        var user = User.Create(_username, sercurePassword, _email);
+        var user = User.Create(_username, _password, _email);
         return Task.FromResult(user);
     }
 }

@@ -16,7 +16,7 @@ internal class UserRepository(ApplicationDbContext context, IEventStore eventSto
             await context.Users.AddAsync(user);
             await context.SaveChangesAsync();
 
-            var userCreatedEvent = new UserCreatedEvent(user.Id.Value, user.Username.Value, user.Email.Value);
+            var userCreatedEvent = new UserCreatedEvent(user.Id, user.Username.Value, user.Email.Value);
             await eventStore.SaveEventAsync(userCreatedEvent);
         }
         catch (Exception ex)
@@ -34,11 +34,11 @@ internal class UserRepository(ApplicationDbContext context, IEventStore eventSto
 
     public async Task<Result<User>> GetUserByIdAsync(string id)
     {
-        var user = await context.Users.SingleOrDefaultAsync(u => u.Id.Value.ToString() == id);
+        var user = await context.Users.SingleOrDefaultAsync(u => u.Id.ToString() == id);
         if (user == null)
             return Result.Failure<User>(AppErrors.UserError.NotFound);
 
-        var userEvents = await eventStore.GetEventsAsync<UserCreatedEvent>(user.Id.Value);
+        var userEvents = await eventStore.GetEventsAsync<UserCreatedEvent>(user.Id);
 
         foreach (var @event in userEvents)
         {
@@ -55,7 +55,7 @@ internal class UserRepository(ApplicationDbContext context, IEventStore eventSto
         if (user == null)
             return Result.Failure<User>(AppErrors.UserError.NotFound);
 
-        var userEvents = await eventStore.GetEventsAsync<UserCreatedEvent>(user.Id.Value);
+        var userEvents = await eventStore.GetEventsAsync<UserCreatedEvent>(user.Id);
 
         foreach (var @event in userEvents)
         {

@@ -3,18 +3,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace TARA.AuthenticationService.Infrastructure.Data;
 
-public class ApplicationDbContext : DbContext
+public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : DbContext(options)
 {
-    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
-
     public DbSet<User> Users { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
         modelBuilder.Entity<User>().HasKey(u => u.Id);
-        modelBuilder.Entity<User>().Property(u => u.Username.Value).IsRequired().HasMaxLength(15);
-        modelBuilder.Entity<User>().Property(u => u.Password.Value).IsRequired();
-        modelBuilder.Entity<User>().Property(u => u.Email.Value).IsRequired();
+        modelBuilder.Entity<User>().OwnsOne(u => u.Username).Property(u => u.Value).IsRequired().HasMaxLength(15);
+        modelBuilder.Entity<User>().OwnsOne(u => u.Password).Property(u => u.Value).IsRequired();
+        modelBuilder.Entity<User>().OwnsOne(u => u.Email).Property(u => u.Value).IsRequired();
     }
 }

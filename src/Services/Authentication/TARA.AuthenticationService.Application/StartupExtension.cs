@@ -7,9 +7,9 @@ using TARA.AuthenticationService.Infrastructure;
 namespace TARA.AuthenticationService.Application;
 public static class StartupExtension
 {
-    public static IServiceCollection RegisterApplicationServices(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection RegisterApplicationServices(this IServiceCollection services, IConfiguration configuration, bool isTestEnviroment = false)
     {
-        services.RegisterInfrastructureServices(configuration);
+        services.RegisterInfrastructureServices(configuration, isTestEnviroment);
 
         services.AddMediatR(options =>
         {

@@ -1,5 +1,8 @@
 using TARA.AuthenticationService.Application;
-internal class Program
+
+namespace TARA.AuthenticationService.Api;
+
+public class Program
 {
     private static void Main(string[] args)
     {

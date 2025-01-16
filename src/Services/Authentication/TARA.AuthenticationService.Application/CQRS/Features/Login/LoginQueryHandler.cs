@@ -13,7 +13,7 @@ public class LoginQueryHandler(IUserService userService, ITokenService tokenServ
         if (resultVerify.IsFailure)
             return Result.Failure<LoginResponseDto>(resultVerify.Error);
 
-        var resultToken = tokenService.GenerateToken(resultVerify.Value.Id.Value.ToString());
+        var resultToken = tokenService.GenerateToken(resultVerify.Value.Id.ToString());
 
         return resultToken.IsSuccess
             ? new LoginResponseDto(resultToken.Value)

@@ -5,28 +5,31 @@ using TARA.AuthenticationService.Domain.ValueObjects;
 namespace TARA.AuthenticationService.Domain.Entities;
 public class User : IAggregateRoot
 {
-    public UserId Id { get; private set; }
+    public Guid Id { get; private set; }
     public Username Username { get; private set; }
     public Password Password { get; private set; }
     public Email Email { get; private set; }
 
     private readonly List<object> _uncommittedEvents = [];
 
-    private User(UserId userId, Username name, Password password, Email email)
+#pragma warning disable CS8618 
+    private User() { } // ef core
+#pragma warning restore CS8618 
+    private User(Guid userId, Username name, Password password, Email email)
     {
         Id = userId;
         Username = name;
         Password = password;
         Email = email;
 
-        var @event = new UserCreatedEvent(Id.Value, Username.Value, Email.Value);
+        var @event = new UserCreatedEvent(Id, Username.Value, Email.Value);
         _uncommittedEvents.Add(@event);
         ApplyEvent(@event);
     }
 
     public static User Create(Username username, Password password, Email email)
     {
-        return new(UserId.Create(), username, password, email);
+        return new(Guid.NewGuid(), username, password, email);
     }
 
     public void ApplyEvent(object @event)
@@ -34,7 +37,7 @@ public class User : IAggregateRoot
         switch (@event)
         {
             case UserCreatedEvent e:
-                Id = UserId.Create(e.UserId);
+                Id = e.UserId;
                 Username = Username.Create(e.Username);
                 Email = Email.Create(e.Email);
                 break;
