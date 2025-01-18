@@ -21,7 +21,7 @@ public sealed class User : AggregateRoot
         Password = password;
         Email = email;
 
-        RaiseDomainEvent(new UserCreatedDomainEvent(Guid.NewGuid(), userId, name, email));
+        RaiseDomainEvent(new UserCreatedDomainEvent(userId, name, email));
     }
 
     public static User Create(Username username, Password password, Email email)
@@ -34,18 +34,18 @@ public sealed class User : AggregateRoot
     public void UpdateName(Username username)
     {
         Username = username;
-        RaiseDomainEvent(new UserChangeNameDomainEvent(Guid.NewGuid(), UserId, Username));
+        RaiseDomainEvent(new UserChangeNameDomainEvent(UserId, Username));
     }
     public void UpdateEmail(Email email)
     {
         Email = email;
-        RaiseDomainEvent(new UserChangeEmailDomainEvent(Guid.NewGuid(), UserId, Email));
+        RaiseDomainEvent(new UserChangeEmailDomainEvent(UserId, Email));
     }
 
-    public void ChangePassword(Password password)
+    public void UpdatePassword(Password password)
     {
         Password = password;
-        RaiseDomainEvent(new UserChangePasswordDomainEvent(Guid.NewGuid(), UserId, Password));
+        RaiseDomainEvent(new UserChangePasswordDomainEvent(UserId, Password));
     }
 
     public override void ApplyEvent(IDomainEvent @event)

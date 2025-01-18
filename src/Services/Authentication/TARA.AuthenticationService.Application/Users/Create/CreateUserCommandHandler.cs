@@ -5,7 +5,7 @@ using TARA.AuthenticationService.Domain.Users.ValueObjects;
 using TARA.Shared.ResultObject;
 
 namespace TARA.AuthenticationService.Application.Users.Create;
-public class CreateUserCommandHandler(IUserWriteRepository userWriteRepository, IEventStore eventStore)
+public class CreateUserCommandHandler(IUserWriteRepository userWriteRepository)
     : ICommandHandler<CreateUserCommand>
 {
     public async Task<Result> Handle(CreateUserCommand request, CancellationToken cancellationToken)
@@ -22,18 +22,9 @@ public class CreateUserCommandHandler(IUserWriteRepository userWriteRepository, 
 
         var user = User.Create(username.Value, password.Value, email.Value);
 
-        var resultRepo = await userWriteRepository.AddUserAsync(user);
-        if (resultRepo.IsFailure)
-        {
-            return resultRepo.Error;
-        }
-        var eventStoreResult = await eventStore.SaveUncommitedEventsAsync(user);
-        if (eventStoreResult.IsFailure)
-        {
-            return eventStoreResult.Error;
-        }
+        await userWriteRepository.AddUserAsync(user);
+
 
         return Result.Success();
-
     }
 }

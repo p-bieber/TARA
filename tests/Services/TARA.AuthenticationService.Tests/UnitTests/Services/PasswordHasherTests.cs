@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
 using Microsoft.Extensions.Options;
-using TARA.AuthenticationService.Infrastructure.Configuration;
 using TARA.AuthenticationService.Infrastructure.Services;
+using TARA.AuthenticationService.Infrastructure.Settings;
 
 namespace TARA.AuthenticationService.Tests.UnitTests.Services;
 

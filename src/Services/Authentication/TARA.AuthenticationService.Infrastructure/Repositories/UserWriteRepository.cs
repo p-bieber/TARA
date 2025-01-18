@@ -12,7 +12,6 @@ public class UserWriteRepository(ApplicationDbContext context) : IUserWriteRepos
         try
         {
             await context.Users.AddAsync(user);
-            await context.SaveChangesAsync();
             return Result.Success();
         }
         catch (Exception ex)
@@ -30,7 +29,6 @@ public class UserWriteRepository(ApplicationDbContext context) : IUserWriteRepos
                 return UserErrors.NotFound;
 
             context.Entry(user).CurrentValues.SetValues(updatedUser);
-            await context.SaveChangesAsync();
             return Result.Success();
         }
         catch (Exception ex)
@@ -47,7 +45,6 @@ public class UserWriteRepository(ApplicationDbContext context) : IUserWriteRepos
             if (user == null)
                 return UserErrors.NotFound;
             context.Users.Remove(user);
-            await context.SaveChangesAsync();
         }
         catch (Exception ex)
         {

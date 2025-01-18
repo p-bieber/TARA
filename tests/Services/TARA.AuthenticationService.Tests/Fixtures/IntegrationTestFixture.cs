@@ -24,8 +24,6 @@ public class IntegrationTestFixture : IDisposable
         // Konfiguriere die In-Memory-Datenbank
         services.AddDbContext<ApplicationDbContext>(options =>
             options.UseInMemoryDatabase("TestDb"));
-        services.AddDbContext<EventStoreDbContext>(options =>
-            options.UseInMemoryDatabase("TestEventStore"));
 
         // Registriere andere erforderliche Dienste
 
@@ -38,8 +36,6 @@ public class IntegrationTestFixture : IDisposable
         var scopedServices = scope.ServiceProvider;
         var dbContext = scopedServices.GetRequiredService<ApplicationDbContext>();
         dbContext.Database.EnsureCreated();
-        var eventStore = scopedServices.GetRequiredService<EventStoreDbContext>();
-        eventStore.Database.EnsureCreated();
     }
 
     public void Dispose()
@@ -56,8 +52,6 @@ public class IntegrationTestFixture : IDisposable
             using var scope = ServiceProvider.CreateScope();
             var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
             dbContext.Database.EnsureDeleted();
-            var eventStore = scope.ServiceProvider.GetRequiredService<EventStoreDbContext>();
-            eventStore.Database.EnsureDeleted();
 
             ServiceProvider.Dispose();
         }

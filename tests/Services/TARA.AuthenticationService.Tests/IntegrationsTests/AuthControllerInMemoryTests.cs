@@ -18,15 +18,13 @@ namespace TARA.AuthenticationService.Tests.IntegrationsTests;
 
 public class AuthControllerInMemoryTests : IAsyncLifetime, IClassFixture<IntegrationTestFixture>
 {
-    private readonly ApplicationDbContext _context;
-    private readonly EventStoreDbContext _eventStore;
+    private readonly ApplicationDbContext _dbContext;
     private readonly AuthController _authController;
 
 
     public AuthControllerInMemoryTests(IntegrationTestFixture testFixture)
     {
-        _context = testFixture.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        _eventStore = testFixture.ServiceProvider.GetRequiredService<EventStoreDbContext>();
+        _dbContext = testFixture.ServiceProvider.GetRequiredService<ApplicationDbContext>();
         var loggerMock = new Mock<ILogger<AuthController>>();
         var sender = testFixture.ServiceProvider.GetRequiredService<ISender>();
         _authController = new AuthController(loggerMock.Object, sender);
@@ -34,16 +32,13 @@ public class AuthControllerInMemoryTests : IAsyncLifetime, IClassFixture<Integra
 
     public async Task InitializeAsync()
     {
-        await _context.Database.EnsureDeletedAsync();
-        await _eventStore.Database.EnsureDeletedAsync();
-        await _context.Database.EnsureCreatedAsync();
-        await _eventStore.Database.EnsureCreatedAsync();
+        await _dbContext.Database.EnsureDeletedAsync();
+        await _dbContext.Database.EnsureCreatedAsync();
     }
 
     public async Task DisposeAsync()
     {
-        await _context.Database.EnsureDeletedAsync();
-        await _eventStore.Database.EnsureDeletedAsync();
+        await _dbContext.Database.EnsureDeletedAsync();
     }
 
     [Fact]
@@ -55,11 +50,11 @@ public class AuthControllerInMemoryTests : IAsyncLifetime, IClassFixture<Integra
         result.Should().NotBeNull();
         result!.StatusCode.Should().Be(200);
 
-        var user = await _context.Users.FirstOrDefaultAsync(x => x.Username.Value == "TestUser");
+        var user = await _dbContext.Users.FirstOrDefaultAsync(x => x.Username.Value == "TestUser");
         user.Should().NotBeNull();
         user?.Email.Value.Should().Be("testemail@test.de");
 
-        var @event = await _eventStore.Events.FirstOrDefaultAsync(x => x.StreamId == user!.Id);
+        var @event = await _dbContext.Events.FirstOrDefaultAsync(x => x.AggregateId == user!.Id);
         @event.Should().NotBeNull();
         @event!.Type.Should().Be(nameof(UserCreatedDomainEvent));
     }

@@ -39,8 +39,6 @@ public class Program
         using var scope = app.ApplicationServices.CreateScope();
         var services = scope.ServiceProvider;
         var context = services.GetRequiredService<ApplicationDbContext>();
-        var eventStore = services.GetRequiredService<EventStoreDbContext>();
         context.Database.Migrate();
-        eventStore.Database.Migrate();
     }
 }

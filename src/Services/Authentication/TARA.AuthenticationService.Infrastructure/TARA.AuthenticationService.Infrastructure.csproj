@@ -26,4 +26,8 @@
 	  <ProjectReference Include="..\TARA.AuthenticationService.Domain\TARA.AuthenticationService.Domain.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="Migrations\" />
+	</ItemGroup>
+
 </Project>

@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Options;
-using TARA.AuthenticationService.Infrastructure.Configuration;
+using TARA.AuthenticationService.Infrastructure.Settings;
 
 namespace TARA.AuthenticationService.Infrastructure.Services;
 

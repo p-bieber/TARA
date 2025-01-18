@@ -1,7 +1,11 @@
 ﻿namespace TARA.Shared.Primitives;
-public abstract class AggregateRoot(Guid id) : Entity(id)
+public abstract class AggregateRoot(Guid id) : Entity(id), IAuditableEntity
 {
     private readonly List<IDomainEvent> _domainEvents = [];
+
+    public DateTimeOffset CreatedAt { get; set; }
+
+    public DateTimeOffset? UpdatedAt { get; set; }
 
     protected void RaiseDomainEvent(IDomainEvent domainEvent)
     {

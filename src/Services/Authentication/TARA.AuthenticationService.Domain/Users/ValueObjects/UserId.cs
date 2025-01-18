@@ -10,9 +10,13 @@ public class UserId : ValueObject
     {
         Value = value;
     }
-    public static Result<UserId> Create()
+    public static Result<UserId> Create(Guid? guid = null)
     {
-        return new UserId(Guid.NewGuid());
+        if (guid is null)
+        {
+            guid = Guid.NewGuid();
+        }
+        return new UserId((Guid)guid);
     }
     public override IEnumerable<object> GetAtomicValues()
     {
