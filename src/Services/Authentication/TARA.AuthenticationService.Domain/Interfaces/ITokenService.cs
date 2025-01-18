@@ -1,4 +1,4 @@
-﻿using TARA.Shared;
+﻿using TARA.Shared.ResultObject;
 
 namespace TARA.AuthenticationService.Domain.Interfaces;
 

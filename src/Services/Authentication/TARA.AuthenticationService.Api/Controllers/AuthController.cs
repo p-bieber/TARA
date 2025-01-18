@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using TARA.AuthenticationService.Application.CQRS.Features.CreateUser;
-using TARA.AuthenticationService.Application.CQRS.Features.Login;
+using TARA.AuthenticationService.Application.Users.Create;
+using TARA.AuthenticationService.Application.Users.Login;
 
 namespace TARA.AuthenticationService.Api.Controllers;
 

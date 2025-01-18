@@ -4,10 +4,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
 using TARA.AuthenticationService.Api.Controllers;
-using TARA.AuthenticationService.Application.CQRS.Features.Login;
-using TARA.AuthenticationService.Application.Dtos;
-using TARA.AuthenticationService.Domain;
-using TARA.Shared;
+using TARA.AuthenticationService.Application.Users.Login;
+using TARA.AuthenticationService.Domain.Users.Errors;
+using TARA.Shared.ResultObject;
 
 namespace TARA.AuthenticationService.Tests.IntegrationsTests;
 public class AuthControllerTests
@@ -28,7 +27,7 @@ public class AuthControllerTests
     {
         var request = new LoginQuery("Maxim", "password");
 
-        _senderMock.Setup(s => s.Send(request, CancellationToken.None)).ReturnsAsync(Result.Success(new LoginResponseDto("valid-token")));
+        _senderMock.Setup(s => s.Send(request, CancellationToken.None)).ReturnsAsync(Result.Success(new LoginResponse("valid-token")));
 
         var result = await _authController.Login(request) as OkObjectResult;
 
@@ -42,12 +41,12 @@ public class AuthControllerTests
     {
         var request = new LoginQuery("Maxim", "password");
 
-        _senderMock.Setup(s => s.Send(request, CancellationToken.None)).ReturnsAsync(Result.Failure<LoginResponseDto>(AppErrors.UserError.WrongLoginCredientials));
+        _senderMock.Setup(s => s.Send(request, CancellationToken.None)).ReturnsAsync(Result.Failure<LoginResponse>(UserErrors.WrongLoginCredientials));
 
         var result = await _authController.Login(request) as BadRequestObjectResult;
 
         result.Should().NotBeNull();
         result!.StatusCode.Should().Be(400);
-        result.Value.Should().BeEquivalentTo(AppErrors.UserError.WrongLoginCredientials);
+        result.Value.Should().BeEquivalentTo(UserErrors.WrongLoginCredientials);
     }
 }

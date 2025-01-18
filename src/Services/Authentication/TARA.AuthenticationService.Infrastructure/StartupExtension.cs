@@ -36,7 +36,8 @@ public static class StartupExtension
         services.AddScoped<IPasswordHasher, PasswordHasher>();
 
         // Repositories
-        services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IUserReadRepository, UserReadRepository>();
+        services.AddScoped<IUserWriteRepository, UserWriteRepository>();
 
         return services;
     }

@@ -6,14 +6,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
 using TARA.AuthenticationService.Api.Controllers;
-using TARA.AuthenticationService.Application.CQRS.Features.CreateUser;
-using TARA.AuthenticationService.Application.CQRS.Features.Login;
-using TARA.AuthenticationService.Application.Dtos;
-using TARA.AuthenticationService.Domain;
-using TARA.AuthenticationService.Domain.Events;
+using TARA.AuthenticationService.Application.Users.Create;
+using TARA.AuthenticationService.Application.Users.Login;
+using TARA.AuthenticationService.Domain.Users.DomainEvents;
+using TARA.AuthenticationService.Domain.Users.Errors;
 using TARA.AuthenticationService.Infrastructure.Data;
 using TARA.AuthenticationService.Tests.Fixtures;
-using TARA.Shared;
+using TARA.Shared.ResultObject;
 
 namespace TARA.AuthenticationService.Tests.IntegrationsTests;
 
@@ -60,9 +59,9 @@ public class AuthControllerInMemoryTests : IAsyncLifetime, IClassFixture<Integra
         user.Should().NotBeNull();
         user?.Email.Value.Should().Be("testemail@test.de");
 
-        var @event = await _eventStore.Events.FirstOrDefaultAsync(x => x.AggregateId == user!.Id);
+        var @event = await _eventStore.Events.FirstOrDefaultAsync(x => x.StreamId == user!.Id);
         @event.Should().NotBeNull();
-        @event!.Type.Should().Be(nameof(UserCreatedEvent));
+        @event!.Type.Should().Be(nameof(UserCreatedDomainEvent));
     }
 
     [Theory]
@@ -88,7 +87,7 @@ public class AuthControllerInMemoryTests : IAsyncLifetime, IClassFixture<Integra
         var request = new LoginQuery("TestUser", "Test-Pa55word");
         var result = await _authController.Login(request) as OkObjectResult;
         result.Should().NotBeNull();
-        result!.Value.Should().BeOfType<LoginResponseDto>();
+        result!.Value.Should().BeOfType<LoginResponse>();
     }
 
     [Fact]
@@ -100,8 +99,8 @@ public class AuthControllerInMemoryTests : IAsyncLifetime, IClassFixture<Integra
         var request = new LoginQuery("TestUser", "Wrong-Pa55word");
         var result = await _authController.Login(request) as BadRequestObjectResult;
         result.Should().NotBeNull();
-        result!.Value.Should().BeOfType<AppError>();
-        result.Value.Should().Be(AppErrors.UserError.WrongLoginCredientials);
+        result!.Value.Should().BeOfType<Error>();
+        result.Value.Should().Be(UserErrors.WrongLoginCredientials);
     }
 
 

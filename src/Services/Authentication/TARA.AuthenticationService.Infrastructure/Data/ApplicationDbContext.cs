@@ -1,5 +1,5 @@
-﻿using global::TARA.AuthenticationService.Domain.Entities;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using TARA.AuthenticationService.Domain.Users;
 
 namespace TARA.AuthenticationService.Infrastructure.Data;
 

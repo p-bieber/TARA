@@ -13,11 +13,10 @@ public static class StartupExtension
 
         services.AddMediatR(options =>
         {
-            options.RegisterServicesFromAssemblies(typeof(StartupExtension).Assembly);
+            options.RegisterServicesFromAssemblies(ApplicationAssemblyReference.Assembly);
         });
 
         services.AddScoped<ITokenService, TokenService>();
-        services.AddScoped<IUserService, UserService>();
 
         return services;
     }

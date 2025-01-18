@@ -2,41 +2,66 @@
 using System.Text.Json;
 using TARA.AuthenticationService.Domain.Interfaces;
 using TARA.AuthenticationService.Infrastructure.Data;
+using TARA.Shared.Primitives;
+using TARA.Shared.ResultObject;
 
 namespace TARA.AuthenticationService.Infrastructure.Services;
-public class EventStore : IEventStore
+public class EventStore(EventStoreDbContext context) : IEventStore
 {
-    private readonly EventStoreDbContext _context;
-
-    public EventStore(EventStoreDbContext context)
+    public async Task<Result> SaveEventAsync<T>(Guid streamId, T @event) where T : IDomainEvent
     {
-        _context = context;
-    }
-
-    public async Task SaveEventAsync<T>(Guid aggregateId, T @event) where T : class
-    {
-        var eventType = @event.GetType().Name;
-        var data = JsonSerializer.Serialize(@event);
-        var newEvent = new Event
+        try
         {
-            Id = Guid.NewGuid(),
-            Type = eventType,
-            Data = data,
-            CreatedAt = DateTimeOffset.UtcNow,
-            AggregateId = aggregateId
-        };
-        _context.Events.Add(newEvent);
-        await _context.SaveChangesAsync();
+            Event newEvent = new()
+            {
+                EventId = Guid.NewGuid(),
+                CreatedAt = DateTimeOffset.UtcNow,
+                StreamId = streamId,
+                Type = @event.GetType().Name,
+                Data = JsonSerializer.Serialize(@event)
+            };
+            context.Events.Add(newEvent);
+            await context.SaveChangesAsync();
+            return Result.Success();
+        }
+        catch (Exception ex)
+        {
+            return Result.Failure(new Error("EventStore.SaveEventAsync", ex.Message));
+        }
     }
 
-    public async Task<IEnumerable<T?>> GetEventsAsync<T>(Guid aggregateId) where T : class
+    public async Task<Result<IEnumerable<T?>>> GetEventsAsync<T>(Guid streamId) where T : IDomainEvent
     {
-        var events = await _context.Events
-            .Where(e => e.AggregateId == aggregateId)
-            .OrderBy(e => e.CreatedAt)
-            .ToListAsync();
+        try
+        {
+            var events = await context.Events
+                .Where(e => e.StreamId == streamId)
+                .OrderBy(e => e.CreatedAt)
+                .ToListAsync();
+            return events.Select(e => JsonSerializer.Deserialize<T>(e.Data)).ToList();
+        }
+        catch (Exception ex)
+        {
+            return Result.Failure<IEnumerable<T?>>(new Error("EventStore.GetEventsAsync", ex.Message));
+        }
+    }
 
-        return events.Select(e => JsonSerializer.Deserialize<T>(e.Data));
+    public async Task<Result> SaveUncommitedEventsAsync(AggregateRoot aggregate)
+    {
+        try
+        {
+            var events = aggregate.GetDomainEvents();
+            aggregate.ClearDomainEvents();
+            foreach (var @event in events)
+            {
+                await SaveEventAsync(aggregate.Id, @event);
+            }
+            return Result.Success();
+        }
+        catch (Exception ex)
+        {
+            return Result.Failure(new Error("EventStore.SaveUncommitedEventsAsync", ex.Message));
+        }
     }
 }
 

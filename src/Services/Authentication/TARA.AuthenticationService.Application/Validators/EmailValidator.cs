@@ -1,5 +1,5 @@
 ﻿using FluentValidation;
-using TARA.AuthenticationService.Domain.ValueObjects;
+using TARA.AuthenticationService.Domain.Users.ValueObjects;
 
 namespace TARA.AuthenticationService.Application.Validators;
 public class EmailValidator : AbstractValidator<Email>

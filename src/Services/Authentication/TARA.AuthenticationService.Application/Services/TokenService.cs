@@ -3,7 +3,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using TARA.AuthenticationService.Domain.Interfaces;
-using TARA.Shared;
+using TARA.Shared.ResultObject;
 
 namespace TARA.AuthenticationService.Application.Services;
 public class TokenService : ITokenService
