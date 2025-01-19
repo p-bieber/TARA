@@ -5,7 +5,7 @@ using TARA.AuthenticationService.Domain.Users.ValueObjects;
 using TARA.Shared.ResultObject;
 
 namespace TARA.AuthenticationService.Application.Users.Create;
-public class CreateUserCommandHandler(IUserWriteRepository userWriteRepository)
+public class CreateUserCommandHandler(IUserWriteRepository userWriteRepository, IUnitOfWork unitOfWork)
     : ICommandHandler<CreateUserCommand>
 {
     public async Task<Result> Handle(CreateUserCommand request, CancellationToken cancellationToken)
@@ -17,13 +17,14 @@ public class CreateUserCommandHandler(IUserWriteRepository userWriteRepository)
 
         if (username.IsFailure || password.IsFailure || email.IsFailure)
         {
-            return Error.None;
+            return new Error("CreateUser.ValidationError", "Validation not succeeded");
         }
 
         var user = User.Create(username.Value, password.Value, email.Value);
 
         await userWriteRepository.AddUserAsync(user);
 
+        await unitOfWork.SaveChangesAsync(cancellationToken);
 
         return Result.Success();
     }

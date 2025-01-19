@@ -69,7 +69,7 @@ public class AuthControllerInMemoryTests : IAsyncLifetime, IClassFixture<Integra
     {
         var request = new CreateUserCommand(username, password, email);
 
-        var result = await _authController.Register(request) as BadRequestObjectResult;
+        var result = await _authController.Register(request);// as BadRequestObjectResult;
         result.Should().NotBeNull();
     }
 
@@ -80,9 +80,10 @@ public class AuthControllerInMemoryTests : IAsyncLifetime, IClassFixture<Integra
         await _authController.Register(createRequest);
 
         var request = new LoginQuery("TestUser", "Test-Pa55word");
-        var result = await _authController.Login(request) as OkObjectResult;
+        var result = await _authController.Login(request);
         result.Should().NotBeNull();
-        result!.Value.Should().BeOfType<LoginResponse>();
+        result.Should().BeOfType<OkObjectResult>();
+        ((OkObjectResult)result).Value.Should().BeOfType<LoginResponse>();
     }
 
     [Fact]

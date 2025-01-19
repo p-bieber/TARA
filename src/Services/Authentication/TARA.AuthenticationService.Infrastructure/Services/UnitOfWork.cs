@@ -22,7 +22,7 @@ internal sealed class UnitOfWork(ApplicationDbContext dbContext) : IUnitOfWork
             .Select(x => x.Entity)
             .SelectMany(aggregateRoot =>
             {
-                var domainEvents = aggregateRoot.GetDomainEvents();
+                var domainEvents = aggregateRoot.GetDomainEvents().ToList();
                 aggregateRoot.ClearDomainEvents();
                 return domainEvents;
             })

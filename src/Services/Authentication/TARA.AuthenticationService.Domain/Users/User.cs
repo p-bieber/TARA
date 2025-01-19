@@ -12,16 +12,16 @@ public sealed class User : AggregateRoot
 
     private User(
         UserId userId,
-        Username name,
+        Username username,
         Password password,
         Email email) : base(userId.Value)
     {
         UserId = userId;
-        Username = name;
+        Username = username;
         Password = password;
         Email = email;
 
-        RaiseDomainEvent(new UserCreatedDomainEvent(userId, name, email));
+        RaiseDomainEvent(new UserCreatedDomainEvent(userId, username, email));
     }
 
     public static User Create(Username username, Password password, Email email)
