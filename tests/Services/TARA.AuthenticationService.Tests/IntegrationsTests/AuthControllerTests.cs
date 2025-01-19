@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -29,7 +30,7 @@ public class AuthControllerTests
 
         _senderMock.Setup(s => s.Send(request, CancellationToken.None)).ReturnsAsync(Result.Success(new LoginResponse("valid-token")));
 
-        var result = await _authController.Login(request) as OkObjectResult;
+        var result = await _authController.Login(request, CancellationToken.None) as OkObjectResult;
 
         result.Should().NotBeNull();
         result?.StatusCode.Should().Be(200);
@@ -43,10 +44,12 @@ public class AuthControllerTests
 
         _senderMock.Setup(s => s.Send(request, CancellationToken.None)).ReturnsAsync(Result.Failure<LoginResponse>(UserErrors.WrongLoginCredientials));
 
-        var result = await _authController.Login(request) as BadRequestObjectResult;
+        var result = await _authController.Login(request, CancellationToken.None) as BadRequestObjectResult;
 
         result.Should().NotBeNull();
-        result!.StatusCode.Should().Be(400);
-        result.Value.Should().BeEquivalentTo(UserErrors.WrongLoginCredientials);
+        result!.StatusCode.Should().Be(StatusCodes.Status400BadRequest);
+        var problemDetails = result.Value as ProblemDetails;
+        problemDetails.Should().NotBeNull();
+        problemDetails!.Detail.Should().Be(UserErrors.WrongLoginCredientials.Message);
     }
 }

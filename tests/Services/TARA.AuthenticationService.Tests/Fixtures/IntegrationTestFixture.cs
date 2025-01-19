@@ -13,7 +13,7 @@ public class IntegrationTestFixture : IDisposable
     {
         var services = new ServiceCollection();
 
-        // Konfiguration laden
+        // Load configuration
         var configurationBuilder = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
@@ -21,17 +21,17 @@ public class IntegrationTestFixture : IDisposable
         Configuration = configurationBuilder.Build();
 
 
-        // Konfiguriere die In-Memory-Datenbank
+        // Configure the in-memory database
         services.AddDbContext<ApplicationDbContext>(options =>
-            options.UseInMemoryDatabase("TestDb"));
+            options.UseInMemoryDatabase(Guid.NewGuid().ToString()));
 
-        // Registriere andere erforderliche Dienste
+        // Register other required services
 
         services.RegisterApplicationServices(Configuration, true);
 
         ServiceProvider = services.BuildServiceProvider();
 
-        // Initialisiere die Datenbank
+        // Initialize the database
         using var scope = ServiceProvider.CreateScope();
         var scopedServices = scope.ServiceProvider;
         var dbContext = scopedServices.GetRequiredService<ApplicationDbContext>();
@@ -48,7 +48,6 @@ public class IntegrationTestFixture : IDisposable
     {
         if (disposing)
         {
-            // Bereinigen der Ressourcen
             using var scope = ServiceProvider.CreateScope();
             var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
             dbContext.Database.EnsureDeleted();

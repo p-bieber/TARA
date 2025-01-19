@@ -9,4 +9,6 @@ public static class UsernameErrors
         new("Username.TooLong", "Username is too long");
     public static Error TooShort =>
         new("Username.TooShort", "Username is too short");
+    public static Error InvalidCharacters =>
+        new("Username.InvalidCharacters", "Username contains invalid characters");
 }

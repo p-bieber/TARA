@@ -3,7 +3,7 @@ using TARA.AuthenticationService.Domain.Interfaces;
 using TARA.Shared.ResultObject;
 
 namespace TARA.AuthenticationService.Application.Users.GetUser;
-public class GetUserByUsernameQueryHandler(IUserReadRepository userRepository) : IQueryHandler<GetUserByUsernameQuery, UserResponse>
+public sealed class GetUserByUsernameQueryHandler(IUserReadRepository userRepository) : IQueryHandler<GetUserByUsernameQuery, UserResponse>
 {
     public async Task<Result<UserResponse>> Handle(GetUserByUsernameQuery request, CancellationToken cancellationToken)
     {

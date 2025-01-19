@@ -1,36 +1,21 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using TARA.AuthenticationService.Application.Users.Create;
 using TARA.AuthenticationService.Application.Users.Login;
+using TARA.Shared.ResultObject;
 
 namespace TARA.AuthenticationService.Api.Controllers;
 
-[ApiController]
 [Route("[controller]")]
-public class AuthController(ILogger<AuthController> logger, ISender sender) : BaseController(logger, sender)
+public class AuthController(ILogger<AuthController> logger, ISender sender) : ApiController(logger, sender)
 {
     [HttpPost("login")]
-    public async Task<IActionResult> Login([FromBody] LoginQuery request)
+    public async Task<IActionResult> Login([FromBody] LoginQuery request, CancellationToken cancellationToken)
     {
-        var result = await _sender.Send(request);
+        Result<LoginResponse> result = await _sender.Send(request, cancellationToken);
 
-        return result != null
-            ? result.IsSuccess
+        return result.IsSuccess
             ? Ok(result.Value)
-            : BadRequest(result.Error)
-            : Conflict();
+            : HandleFailure(result);
     }
 
-    [HttpPost("register")]
-    public async Task<IActionResult> Register([FromBody] CreateUserCommand request)
-    {
-        var result = await _sender.Send(request);
-        return result == null
-            ? Conflict()
-            : result.IsSuccess
-            ? Ok()
-            : result.IsFailure
-            ? BadRequest(result.Error)
-            : BadRequest();
-    }
 }

@@ -9,9 +9,9 @@ namespace TARA.AuthenticationService.Infrastructure.Repositories;
 
 public class UserReadRepository(ApplicationDbContext context) : IUserReadRepository
 {
-    public async Task<Result<User>> GetUserByIdAsync(string id)
+    public async Task<Result<User>> GetUserByIdAsync(Guid id)
     {
-        var user = await context.Users.SingleOrDefaultAsync(u => u.Id.ToString() == id);
+        var user = await context.Users.SingleOrDefaultAsync(u => u.Id == id);
         return user != null
             ? user
             : UserErrors.NotFound;

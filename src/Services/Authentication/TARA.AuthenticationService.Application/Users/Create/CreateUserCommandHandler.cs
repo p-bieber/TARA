@@ -2,30 +2,25 @@
 using TARA.AuthenticationService.Domain.Interfaces;
 using TARA.AuthenticationService.Domain.Users;
 using TARA.AuthenticationService.Domain.Users.ValueObjects;
+using TARA.AuthenticationService.Infrastructure.Services;
 using TARA.Shared.ResultObject;
 
 namespace TARA.AuthenticationService.Application.Users.Create;
-public class CreateUserCommandHandler(IUserWriteRepository userWriteRepository, IUnitOfWork unitOfWork)
-    : ICommandHandler<CreateUserCommand>
+public sealed class CreateUserCommandHandler(IUserWriteRepository userWriteRepository, IPasswordHasher passwordHasher, IUnitOfWork unitOfWork)
+    : ICommandHandler<CreateUserCommand, UserId>
 {
-    public async Task<Result> Handle(CreateUserCommand request, CancellationToken cancellationToken)
+    public async Task<Result<UserId>> Handle(CreateUserCommand request, CancellationToken cancellationToken)
     {
-        // validation and user creation
-        var username = Username.Create(request.Username);
-        var password = Password.Create(request.Password);
-        var email = Email.Create(request.Email);
+        var usernameResult = Username.Create(request.Username);
+        var passwordResult = Password.Create(passwordHasher.HashPassword(request.Password));
+        var emailResult = Email.Create(request.Email);
 
-        if (username.IsFailure || password.IsFailure || email.IsFailure)
-        {
-            return new Error("CreateUser.ValidationError", "Validation not succeeded");
-        }
-
-        var user = User.Create(username.Value, password.Value, email.Value);
+        var user = User.Create(usernameResult.Value, passwordResult.Value, emailResult.Value);
 
         await userWriteRepository.AddUserAsync(user);
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
-        return Result.Success();
+        return user.UserId;
     }
 }
