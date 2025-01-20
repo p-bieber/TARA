@@ -28,7 +28,7 @@ public class UserController(ILogger<UserController> logger, ISender sender) : Ap
         Result<UserResponse> result = await _sender.Send(query, cancellationToken);
         return result.IsSuccess
             ? Ok(result.Value)
-            : HandleFailure(result);
+            : NotFound();
     }
 
     [HttpGet("byName")]
@@ -38,6 +38,6 @@ public class UserController(ILogger<UserController> logger, ISender sender) : Ap
         Result<UserResponse> result = await _sender.Send(query);
         return result.IsSuccess
             ? Ok(result.Value)
-            : HandleFailure(result);
+            : NotFound();
     }
 }

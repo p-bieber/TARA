@@ -11,4 +11,6 @@ public static class UsernameErrors
         new("Username.TooShort", "Username is too short");
     public static Error InvalidCharacters =>
         new("Username.InvalidCharacters", "Username contains invalid characters");
+    public static Error AlreadyExists =>
+        new("Username.AlreadyExists", "Username already exists");
 }

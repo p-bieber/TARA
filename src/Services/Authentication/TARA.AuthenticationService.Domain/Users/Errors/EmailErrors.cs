@@ -10,4 +10,6 @@ public static class EmailErrors
         new("Email.TooLong", "Email is too long");
     public static Error InvalidFormat =>
         new("Email.InvalidFormat", "Email is invalid format");
+    public static Error AlreadyExists =>
+        new("Email.AlreadyExists", "Email already exists");
 }
