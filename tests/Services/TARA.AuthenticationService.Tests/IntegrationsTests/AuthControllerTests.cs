@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
 using TARA.AuthenticationService.Api.Controllers;
+using TARA.AuthenticationService.Api.Dtos;
 using TARA.AuthenticationService.Application.Users.Login;
 using TARA.AuthenticationService.Domain.Users.Errors;
 using TARA.Shared.ResultObject;
@@ -26,9 +27,10 @@ public class AuthControllerTests
     [Fact]
     public async Task Login_Should_Return_Ok_When_Credentials_Are_Valid()
     {
-        var request = new LoginQuery("Maxim", "password");
+        var request = new LoginRequest("Maxim", "password");
+        var query = new LoginQuery(request.Username, request.Password);
 
-        _senderMock.Setup(s => s.Send(request, CancellationToken.None)).ReturnsAsync(Result.Success(new LoginResponse("valid-token")));
+        _senderMock.Setup(s => s.Send(query, CancellationToken.None)).ReturnsAsync(Result.Success(new LoginResponse("valid-token")));
 
         var result = await _authController.Login(request, CancellationToken.None) as OkObjectResult;
 
@@ -40,9 +42,10 @@ public class AuthControllerTests
     [Fact]
     public async Task Login_Should_Return_Unauthorized_When_Credentials_Are_Invalid()
     {
-        var request = new LoginQuery("Maxim", "password");
+        var request = new LoginRequest("Maxim", "password");
+        var query = new LoginQuery(request.Username, request.Password);
 
-        _senderMock.Setup(s => s.Send(request, CancellationToken.None)).ReturnsAsync(Result.Failure<LoginResponse>(UserErrors.WrongLoginCredientials));
+        _senderMock.Setup(s => s.Send(query, CancellationToken.None)).ReturnsAsync(Result.Failure<LoginResponse>(UserErrors.WrongLoginCredientials));
 
         var result = await _authController.Login(request, CancellationToken.None) as BadRequestObjectResult;
 

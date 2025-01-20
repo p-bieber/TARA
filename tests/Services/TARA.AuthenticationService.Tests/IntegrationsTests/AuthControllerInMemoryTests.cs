@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
 using TARA.AuthenticationService.Api.Controllers;
+using TARA.AuthenticationService.Api.Dtos;
 using TARA.AuthenticationService.Application.Users.Login;
 using TARA.AuthenticationService.Domain.Users;
 using TARA.AuthenticationService.Domain.Users.Errors;
@@ -51,7 +52,7 @@ public class AuthControllerInMemoryTests : IAsyncLifetime, IClassFixture<Integra
     [Fact]
     public async Task Login_Should_Return_Ok_When_Credentials_Are_Valid()
     {
-        var request = new LoginQuery("TestUser", "Test-Pa55word");
+        var request = new LoginRequest("TestUser", "Test-Pa55word");
 
         var result = await _authController.Login(request, CancellationToken.None);// as OkObjectResult;
 
@@ -63,7 +64,7 @@ public class AuthControllerInMemoryTests : IAsyncLifetime, IClassFixture<Integra
     [Fact]
     public async Task Login_Should_Return_BadRequest_When_Credentials_Are_Invalid()
     {
-        var request = new LoginQuery("TestUser", "Wrong-Pa55word");
+        var request = new LoginRequest("TestUser", "Wrong-Pa55word");
 
         var result = await _authController.Login(request, CancellationToken.None) as BadRequestObjectResult;
 

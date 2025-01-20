@@ -2,7 +2,7 @@
 using TARA.AuthenticationService.Domain.Users.Errors;
 using TARA.AuthenticationService.Domain.Users.ValueObjects;
 
-namespace TARA.AuthenticationService.Tests.UnitTests.ValueObjects;
+namespace TARA.AuthenticationService.Tests.UnitTests.Users.ValueObjects;
 public class EmailTests
 {
     [Fact]
@@ -16,7 +16,7 @@ public class EmailTests
     }
 
     [Fact]
-    public void Should_Throw_Exception_When_Value_Is_Empty()
+    public void Should_Create_Error_When_Value_Is_Empty()
     {
         var emailResult = Email.Create("");
         emailResult.Should().NotBeNull();
@@ -25,7 +25,7 @@ public class EmailTests
     }
 
     [Fact]
-    public void Should_Throw_Exception_When_Value_Is_TooLong()
+    public void Should_Create_Error_When_Value_Is_TooLong()
     {
         var emailResult = Email.Create(string.Concat(new string('t', Email.MaxLength), "@example.com"));
         emailResult.Should().NotBeNull();
@@ -34,7 +34,7 @@ public class EmailTests
     }
 
     [Fact]
-    public void Should_Throw_Exception_When_Value_Is_Invalid_Format()
+    public void Should_Create_Error_When_Value_Is_Invalid_Format()
     {
         var emailResult = Email.Create("testexample.com");
         emailResult.Should().NotBeNull();

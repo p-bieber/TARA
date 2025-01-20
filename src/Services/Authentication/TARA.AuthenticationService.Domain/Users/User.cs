@@ -21,7 +21,7 @@ public sealed class User : AggregateRoot
         Password = password;
         Email = email;
 
-        RaiseDomainEvent(new UserCreatedDomainEvent(userId, username, email));
+        RaiseDomainEvent(new UserCreatedDomainEvent(userId, username, password, email));
     }
 
     public static User Create(Username username, Password password, Email email)
@@ -61,6 +61,9 @@ public sealed class User : AggregateRoot
                 break;
             case UserChangeEmailDomainEvent e:
                 Email = e.Email;
+                break;
+            case UserChangePasswordDomainEvent e:
+                Password = e.Password;
                 break;
             default:
                 break;
