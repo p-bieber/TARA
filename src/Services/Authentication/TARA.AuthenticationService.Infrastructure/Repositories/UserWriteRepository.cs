@@ -1,4 +1,5 @@
-﻿using TARA.AuthenticationService.Domain.Interfaces;
+﻿using Microsoft.EntityFrameworkCore;
+using TARA.AuthenticationService.Domain.Interfaces;
 using TARA.AuthenticationService.Domain.Users;
 using TARA.AuthenticationService.Domain.Users.Errors;
 using TARA.AuthenticationService.Infrastructure.Data;
@@ -7,12 +8,16 @@ using TARA.Shared.ResultObject;
 namespace TARA.AuthenticationService.Infrastructure.Repositories;
 public class UserWriteRepository(ApplicationDbContext context) : IUserWriteRepository
 {
-    public async Task<Result> AddUserAsync(User user)
+    public async Task<Result> AddUserAsync(User user, CancellationToken cancellationToken)
     {
         try
         {
-            await context.Users.AddAsync(user);
+            await context.Users.AddAsync(user, cancellationToken);
             return Result.Success();
+        }
+        catch (OperationCanceledException)
+        {
+            return Error.CancellationRequested;
         }
         catch (Exception ex)
         {
@@ -20,16 +25,21 @@ public class UserWriteRepository(ApplicationDbContext context) : IUserWriteRepos
         }
     }
 
-    public async Task<Result> UpateUserAsync(User updatedUser)
+    public async Task<Result> UpateUserAsync(User updatedUser, CancellationToken cancellationToken)
     {
         try
         {
-            var user = await context.Users.FindAsync(updatedUser.Id);
+            var users = await context.Users.ToListAsync(cancellationToken);
+            var user = users.FirstOrDefault(x => x.Id == updatedUser.Id);
             if (user == null)
                 return UserErrors.NotFound;
 
             context.Entry(user).CurrentValues.SetValues(updatedUser);
             return Result.Success();
+        }
+        catch (OperationCanceledException)
+        {
+            return Error.CancellationRequested;
         }
         catch (Exception ex)
         {
@@ -37,14 +47,19 @@ public class UserWriteRepository(ApplicationDbContext context) : IUserWriteRepos
         }
     }
 
-    public async Task<Result> DeleteUserAsync(string id)
+    public async Task<Result> DeleteUserAsync(Guid id, CancellationToken cancellationToken)
     {
         try
         {
-            var user = await context.Users.FindAsync(id);
+            var users = await context.Users.ToListAsync(cancellationToken);
+            var user = users.FirstOrDefault(x => x.Id == id);
             if (user == null)
                 return UserErrors.NotFound;
             context.Users.Remove(user);
+        }
+        catch (OperationCanceledException)
+        {
+            return Error.CancellationRequested;
         }
         catch (Exception ex)
         {

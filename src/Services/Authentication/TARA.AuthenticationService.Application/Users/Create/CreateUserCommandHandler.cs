@@ -12,9 +12,9 @@ public sealed class CreateUserCommandHandler(IUserWriteRepository userWriteRepos
 {
     public async Task<Result<UserId>> Handle(CreateUserCommand request, CancellationToken cancellationToken)
     {
-        if (await IsUsernameExist(request.Username))
+        if (await IsUsernameExist(request.Username, cancellationToken))
             return UsernameErrors.AlreadyExists;
-        if (await IsEmailExist(request.Email))
+        if (await IsEmailExist(request.Email, cancellationToken))
             return EmailErrors.AlreadyExists;
 
 
@@ -24,21 +24,21 @@ public sealed class CreateUserCommandHandler(IUserWriteRepository userWriteRepos
 
         var user = User.Create(usernameResult.Value, passwordResult.Value, emailResult.Value);
 
-        await userWriteRepository.AddUserAsync(user);
+        await userWriteRepository.AddUserAsync(user, cancellationToken);
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
         return user.UserId;
     }
 
-    private async Task<bool> IsEmailExist(string email)
+    private async Task<bool> IsEmailExist(string email, CancellationToken cancellationToken)
     {
-        var result = await userReadRepository.GetUserByEmailAsync(email);
+        var result = await userReadRepository.GetUserByEmailAsync(email, cancellationToken);
         return result.IsSuccess;
     }
-    private async Task<bool> IsUsernameExist(string username)
+    private async Task<bool> IsUsernameExist(string username, CancellationToken cancellationToken)
     {
-        var result = await userReadRepository.GetUserByNameAsync(username);
+        var result = await userReadRepository.GetUserByNameAsync(username, cancellationToken);
         return result.IsSuccess;
     }
 }

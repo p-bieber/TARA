@@ -7,7 +7,7 @@ public sealed class GetUserByUsernameQueryHandler(IUserReadRepository userReposi
 {
     public async Task<Result<UserResponse>> Handle(GetUserByUsernameQuery request, CancellationToken cancellationToken)
     {
-        var repoResult = await userRepository.GetUserByNameAsync(request.Username);
+        var repoResult = await userRepository.GetUserByNameAsync(request.Username, cancellationToken);
         if (repoResult.IsFailure)
             return Result.Failure<UserResponse>(repoResult.Error);
 

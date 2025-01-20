@@ -10,7 +10,7 @@ public class LoginQueryHandler(IUserReadRepository userRepository, IPasswordHash
 {
     public async Task<Result<LoginResponse>> Handle(LoginQuery request, CancellationToken cancellationToken)
     {
-        var repoResult = await userRepository.GetUserByNameAsync(request.Username);
+        var repoResult = await userRepository.GetUserByNameAsync(request.Username, cancellationToken);
         if (repoResult.IsSuccess)
         {
             var isPasswordVerified = passwordHasher.VerifyPassword(request.Password, repoResult.Value.Password.Value);

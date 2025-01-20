@@ -8,7 +8,7 @@ public sealed class GetUserByIdQueryHandler(IUserReadRepository userRepository) 
 {
     public async Task<Result<UserResponse>> Handle(GetUserByIdQuery request, CancellationToken cancellationToken)
     {
-        var repoResult = await userRepository.GetUserByIdAsync(request.UserId);
+        var repoResult = await userRepository.GetUserByIdAsync(request.UserId, cancellationToken);
         if (repoResult.IsFailure)
             return repoResult.Error;
         var userDto = new UserResponse(repoResult.Value.Id.ToString(), repoResult.Value.Username.Value, repoResult.Value.Email.Value);
