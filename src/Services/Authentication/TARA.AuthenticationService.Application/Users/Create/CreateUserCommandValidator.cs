@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using TARA.AuthenticationService.Domain.Users.Errors;
 using TARA.AuthenticationService.Domain.Users.ValueObjects;
 
 namespace TARA.AuthenticationService.Application.Users.Create;
@@ -16,10 +17,10 @@ internal class CreateUserCommandValidator : AbstractValidator<CreateUserCommand>
             .NotNull().NotEmpty()
             .MinimumLength(8)
             .MaximumLength(25)
-            .Matches(@"[A-Z]")
-            .Matches(@"[a-z]")
-            .Matches(@"\d")
-            .Matches(@"[\W_]");
+            .Matches(@"[A-Z]").WithMessage(PasswordErrors.NoUpper.Message)
+            .Matches(@"[a-z]").WithMessage(PasswordErrors.NoLower.Message)
+            .Matches(@"\d").WithMessage(PasswordErrors.NoDigit.Message)
+            .Matches(@"[\W_]").WithMessage(PasswordErrors.NoSymbol.Message);
 
         RuleFor(x => x.Email)
             .NotNull().NotEmpty()
