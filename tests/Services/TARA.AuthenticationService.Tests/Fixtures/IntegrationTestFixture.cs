@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using TARA.AuthenticationService.Application;
+using TARA.AuthenticationService.Infrastructure;
 using TARA.AuthenticationService.Infrastructure.Data;
 
 namespace TARA.AuthenticationService.Tests.Fixtures;
@@ -19,7 +20,7 @@ public class IntegrationTestFixture : IDisposable
             .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
             .AddEnvironmentVariables();
         Configuration = configurationBuilder.Build();
-
+        services.AddScoped<IConfiguration>(_ => Configuration);
 
         // Configure the in-memory database
         services.AddDbContext<ApplicationDbContext>(options =>
@@ -27,7 +28,8 @@ public class IntegrationTestFixture : IDisposable
 
         // Register other required services
 
-        services.RegisterApplicationServices(Configuration, true);
+        services.RegisterApplicationServices();
+        services.RegisterInfrastructureServices(Configuration, true);
 
         ServiceProvider = services.BuildServiceProvider();
 

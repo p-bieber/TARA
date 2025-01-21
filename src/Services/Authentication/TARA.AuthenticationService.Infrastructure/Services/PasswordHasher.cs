@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Options;
-using TARA.AuthenticationService.Infrastructure.Settings;
+using TARA.AuthenticationService.Infrastructure.Options;
 
 namespace TARA.AuthenticationService.Infrastructure.Services;
 
@@ -7,7 +7,7 @@ public class PasswordHasher : IPasswordHasher
 {
     private readonly int _workFactor;
 
-    public PasswordHasher(IOptions<PasswordSettings> options)
+    public PasswordHasher(IOptions<PasswordOptions> options)
     {
         _workFactor = options.Value.WorkFactor;
     }

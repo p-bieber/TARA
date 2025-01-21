@@ -16,7 +16,7 @@ public class LoginQueryHandler(IUserReadRepository userRepository, IPasswordHash
             var isPasswordVerified = passwordHasher.VerifyPassword(request.Password, repoResult.Value.Password.Value);
             if (isPasswordVerified)
             {
-                var resultToken = tokenService.GenerateToken(repoResult.Value.Id.ToString());
+                var resultToken = tokenService.GenerateToken(repoResult.Value);
                 if (resultToken.IsSuccess)
                     return new LoginResponse(resultToken.Value);
             }

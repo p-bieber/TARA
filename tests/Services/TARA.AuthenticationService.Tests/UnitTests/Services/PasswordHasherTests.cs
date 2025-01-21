@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
 using Microsoft.Extensions.Options;
+using TARA.AuthenticationService.Infrastructure.Options;
 using TARA.AuthenticationService.Infrastructure.Services;
-using TARA.AuthenticationService.Infrastructure.Settings;
 
 namespace TARA.AuthenticationService.Tests.UnitTests.Services;
 
@@ -11,7 +11,7 @@ public class PasswordHasherTests
 
     public PasswordHasherTests()
     {
-        var options = Options.Create(new PasswordSettings { WorkFactor = 12 });
+        var options = Options.Create(new PasswordOptions { WorkFactor = 12 });
         _passwordHasher = new PasswordHasher(options);
     }
 

@@ -11,17 +11,17 @@ using TARA.AuthenticationService.Domain.Users.Errors;
 using TARA.Shared.ResultObject;
 
 namespace TARA.AuthenticationService.Tests.IntegrationsTests;
-public class AuthControllerTests
+public class UserControllerTests
 {
-    private readonly Mock<ILogger<AuthController>> _loggerMock;
+    private readonly Mock<ILogger<UserController>> _loggerMock;
     private readonly Mock<ISender> _senderMock;
-    private readonly AuthController _authController;
+    private readonly UserController _userController;
 
-    public AuthControllerTests()
+    public UserControllerTests()
     {
-        _loggerMock = new Mock<ILogger<AuthController>>();
+        _loggerMock = new Mock<ILogger<UserController>>();
         _senderMock = new Mock<ISender>();
-        _authController = new AuthController(_loggerMock.Object, _senderMock.Object);
+        _userController = new UserController(_loggerMock.Object, _senderMock.Object);
     }
 
     [Fact]
@@ -32,7 +32,7 @@ public class AuthControllerTests
 
         _senderMock.Setup(s => s.Send(query, CancellationToken.None)).ReturnsAsync(Result.Success(new LoginResponse("valid-token")));
 
-        var result = await _authController.Login(request, CancellationToken.None) as OkObjectResult;
+        var result = await _userController.Login(request, CancellationToken.None) as OkObjectResult;
 
         result.Should().NotBeNull();
         result?.StatusCode.Should().Be(200);
@@ -47,7 +47,7 @@ public class AuthControllerTests
 
         _senderMock.Setup(s => s.Send(query, CancellationToken.None)).ReturnsAsync(Result.Failure<LoginResponse>(UserErrors.WrongLoginCredientials));
 
-        var result = await _authController.Login(request, CancellationToken.None) as BadRequestObjectResult;
+        var result = await _userController.Login(request, CancellationToken.None) as BadRequestObjectResult;
 
         result.Should().NotBeNull();
         result!.StatusCode.Should().Be(StatusCodes.Status400BadRequest);
